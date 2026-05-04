@@ -15,7 +15,7 @@ public interface ProveedorService {
 
     ProveedorResponseDTO crear(ProveedorRequestDTO dto);
 
-    ProveedorResponseDTO actualizar(Long id, ProveedorRequestDTO dto);
+    ProveedorResponseDTO actualizar(Long id,ProveedorRequestDTO dto);
 
     void desactivar(Long id);
 }
