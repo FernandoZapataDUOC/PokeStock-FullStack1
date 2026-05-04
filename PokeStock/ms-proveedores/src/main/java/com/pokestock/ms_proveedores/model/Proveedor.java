@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+@Data
 @Entity
 @Table(name = "proveedores")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

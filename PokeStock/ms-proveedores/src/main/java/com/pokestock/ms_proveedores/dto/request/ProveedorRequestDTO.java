@@ -3,8 +3,7 @@ package com.pokestock.ms_proveedores.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

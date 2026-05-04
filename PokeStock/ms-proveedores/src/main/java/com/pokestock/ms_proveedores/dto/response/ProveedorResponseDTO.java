@@ -2,8 +2,7 @@ package com.pokestock.ms_proveedores.dto.response;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
