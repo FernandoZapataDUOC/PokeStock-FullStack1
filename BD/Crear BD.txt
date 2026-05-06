@@ -1,10 +1,43 @@
-CREATE DATABASE IF NOT EXISTS db_productos;
-CREATE DATABASE IF NOT EXISTS db_stock;
-CREATE DATABASE IF NOT EXISTS db_proveedores;
-CREATE DATABASE IF NOT EXISTS db_documentos;
-CREATE DATABASE IF NOT EXISTS db_validaciones;
-CREATE DATABASE IF NOT EXISTS db_movimientos;
-CREATE DATABASE IF NOT EXISTS db_reportes;
-CREATE DATABASE IF NOT EXISTS db_auth;
-CREATE DATABASE IF NOT EXISTS db_usuarios;
-CREATE DATABASE IF NOT EXISTS db_security;
+-- Módulo de Inventario y Proveedores
+CREATE DATABASE IF NOT EXISTS db_productos
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS db_stock
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS db_proveedores
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+-- Módulo de Documentación y Lógica
+CREATE DATABASE IF NOT EXISTS db_documentos
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS db_validaciones
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+-- Módulo de Transacciones y Reportes
+CREATE DATABASE IF NOT EXISTS db_movimientos
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS db_reportes
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+-- Módulo de Accesos y Seguridad
+CREATE DATABASE IF NOT EXISTS db_auth
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS db_usuarios
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS db_security
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
