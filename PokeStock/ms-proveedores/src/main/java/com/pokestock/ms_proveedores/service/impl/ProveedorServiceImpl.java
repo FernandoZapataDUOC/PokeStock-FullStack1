@@ -6,6 +6,7 @@ import com.pokestock.ms_proveedores.model.Proveedor;
 import com.pokestock.ms_proveedores.repository.ProveedorRepository;
 import com.pokestock.ms_proveedores.service.ProveedorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
+    @Transactional
     public ProveedorResponseDTO crear(ProveedorRequestDTO dto) {
         // Validar email duplicado
         proveedorRepository.findByEmail(dto.getEmail()).ifPresent(p -> {
@@ -59,6 +61,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
+    @Transactional
     public ProveedorResponseDTO actualizar(Long id, ProveedorRequestDTO dto) {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
@@ -79,6 +82,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
+    @Transactional
     public void desactivar(Long id) {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
