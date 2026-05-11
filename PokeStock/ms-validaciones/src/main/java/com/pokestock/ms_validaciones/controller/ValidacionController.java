@@ -1,7 +1,7 @@
 package com.pokestock.ms_validaciones.controller;
 
-import com.pokestock.ms_validaciones.dto.ValidacionRequestDTO;
-import com.pokestock.ms_validaciones.dto.ValidacionResponseDTO;
+import com.pokestock.ms_validaciones.dto.request.ValidacionRequestDTO;
+import com.pokestock.ms_validaciones.dto.response.ValidacionResponseDTO;
 import com.pokestock.ms_validaciones.service.impl.ValidacionServiceImpl;
 
 import jakarta.validation.Valid;

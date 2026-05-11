@@ -1,7 +1,7 @@
 package com.pokestock.ms_validaciones.service.impl;
 
-import com.pokestock.ms_validaciones.dto.ValidacionRequestDTO;
-import com.pokestock.ms_validaciones.dto.ValidacionResponseDTO;
+import com.pokestock.ms_validaciones.dto.request.ValidacionRequestDTO;
+import com.pokestock.ms_validaciones.dto.response.ValidacionResponseDTO;
 import com.pokestock.ms_validaciones.model.Validacion;
 import com.pokestock.ms_validaciones.model.Validacion.EstadoValidacion;
 import com.pokestock.ms_validaciones.repository.ValidacionRepository;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class ValidacionServiceImpl implements ValidacionService {
 
-    private final ValidacionRepository validacionRepository;
+        private final ValidacionRepository validacionRepository;
 
     @Override
     public List<ValidacionResponseDTO> obtenerPorMovimiento(Long movimientoId) {

@@ -2,7 +2,7 @@ package com.pokestock.ms_stock.controller;
 
 import com.pokestock.ms_stock.dto.request.StockRequestDTO;
 import com.pokestock.ms_stock.dto.response.StockResponseDTO;
-import com.pokestock.ms_stock.service.Impl.StockServiceImpl;
+import com.pokestock.ms_stock.service.StockService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StockController {
 
-    private final StockServiceImpl stockService;
+    private final StockService stockService;
 
     @GetMapping
     public ResponseEntity<List<StockResponseDTO>> listarTodo() {

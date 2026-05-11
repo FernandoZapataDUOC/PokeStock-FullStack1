@@ -1,10 +1,11 @@
-package com.pokestock.ms_stock.service.Impl;
+package com.pokestock.ms_stock.service.impl;
 
 import com.pokestock.ms_stock.dto.request.StockRequestDTO;
 import com.pokestock.ms_stock.dto.response.StockResponseDTO;
 import com.pokestock.ms_stock.model.Stock;
 import com.pokestock.ms_stock.repository.StockRepository;
 import com.pokestock.ms_stock.service.StockService;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

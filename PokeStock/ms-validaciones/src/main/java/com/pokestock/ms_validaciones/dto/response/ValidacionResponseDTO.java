@@ -1,4 +1,4 @@
-package com.pokestock.ms_validaciones.dto;
+package com.pokestock.ms_validaciones.dto.response;
 
 import com.pokestock.ms_validaciones.model.Validacion.EstadoValidacion;
 import lombok.*;
