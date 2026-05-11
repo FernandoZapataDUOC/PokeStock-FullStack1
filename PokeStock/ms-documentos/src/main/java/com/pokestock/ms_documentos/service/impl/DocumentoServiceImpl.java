@@ -7,50 +7,72 @@ import com.pokestock.ms_documentos.model.Documento;
 import com.pokestock.ms_documentos.repository.DocumentoRepository;
 import com.pokestock.ms_documentos.service.DocumentoService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DocumentoServiceImpl implements DocumentoService {
 
     private final DocumentoRepository documentoRepository;
 
     @Override
     public List<DocumentoResponseDTO> listarTodos() {
-        return documentoRepository.findAll()
+        log.info("Listando todos los documentos");
+        List<DocumentoResponseDTO> resultado = documentoRepository.findAll()
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+        log.info("Se encontraron {} documentos", resultado.size());
+        return resultado;
     }
 
     @Override
     public List<DocumentoResponseDTO> obtenerPorMovimiento(Long movimientoId) {
-        return documentoRepository.findByMovimientoId(movimientoId)
+        log.info("Buscando documentos para movimiento id: {}", movimientoId);
+        List<DocumentoResponseDTO> resultado = documentoRepository
+                .findByMovimientoId(movimientoId)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+        log.info("Se encontraron {} documentos para movimiento id: {}", resultado.size(), movimientoId);
+        return resultado;
     }
 
     @Override
     public List<DocumentoResponseDTO> obtenerPendientes() {
-        return documentoRepository.findByValidadoFalse()
+        log.info("Buscando documentos pendientes de validación");
+        List<DocumentoResponseDTO> resultado = documentoRepository.findByValidadoFalse()
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+        log.info("Se encontraron {} documentos pendientes", resultado.size());
+        return resultado;
     }
 
     @Override
     public DocumentoResponseDTO obtenerPorId(Long id) {
+        log.info("Buscando documento con id: {}", id);
         Documento doc = documentoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Documento no encontrado con id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Documento no encontrado con id: {}", id);
+                    return new RuntimeException("Documento no encontrado con id: " + id);
+                });
+        log.info("Documento encontrado, tipo: {}, movimiento: {}", doc.getTipo(), doc.getMovimientoId());
         return toResponse(doc);
     }
 
     @Override
+    @Transactional
     public DocumentoResponseDTO registrar(DocumentoRequestDTO dto) {
+        log.info("Registrando documento tipo: {} para movimiento id: {}",
+                dto.getTipo(), dto.getMovimientoId());
+
         Documento doc = Documento.builder()
                 .movimientoId(dto.getMovimientoId())
                 .tipo(dto.getTipo())
@@ -59,16 +81,24 @@ public class DocumentoServiceImpl implements DocumentoService {
                 .validado(false)
                 .build();
 
-        return toResponse(documentoRepository.save(doc));
+        Documento guardado = documentoRepository.save(doc);
+        log.info("Documento registrado exitosamente con id: {}", guardado.getId());
+        return toResponse(guardado);
     }
 
     @Override
+    @Transactional
     public DocumentoResponseDTO validar(Long id, ValidarDocumentoRequestDTO dto) {
-        Documento doc = documentoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Documento no encontrado con id: " + id));
+        log.info("Intentando validar documento con id: {}", id);
 
-        // Validación de negocio — no se puede validar dos veces
+        Documento doc = documentoRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Documento no encontrado para validar, id: {}", id);
+                    return new RuntimeException("Documento no encontrado con id: " + id);
+                });
+
         if (doc.getValidado()) {
+            log.warn("Validación fallida: documento id: {} ya fue validado anteriormente", id);
             throw new RuntimeException("El documento ya fue validado anteriormente");
         }
 
@@ -78,17 +108,19 @@ public class DocumentoServiceImpl implements DocumentoService {
             doc.setObservacion(dto.getObservacion());
         }
 
-        return toResponse(documentoRepository.save(doc));
+        Documento validado = documentoRepository.save(doc);
+        log.info("Documento id: {} validado exitosamente", validado.getId());
+        return toResponse(validado);
     }
 
     private DocumentoResponseDTO toResponse(Documento doc) {
-        return DocumentoResponseDTO.builder()
-                .id(doc.getId())
-                .movimientoId(doc.getMovimientoId())
-                .tipo(doc.getTipo())
-                .archivo(doc.getArchivo())
-                .validado(doc.getValidado())
-                .observacion(doc.getObservacion())
-                .build();
+        DocumentoResponseDTO response = new DocumentoResponseDTO();
+        response.setId(doc.getId());
+        response.setMovimientoId(doc.getMovimientoId());
+        response.setTipo(doc.getTipo());
+        response.setArchivo(doc.getArchivo());
+        response.setValidado(doc.getValidado());
+        response.setObservacion(doc.getObservacion());
+        return response;
     }
 }

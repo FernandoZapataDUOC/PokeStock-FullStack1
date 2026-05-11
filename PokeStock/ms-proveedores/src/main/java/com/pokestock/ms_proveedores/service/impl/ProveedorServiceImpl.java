@@ -6,28 +6,34 @@ import com.pokestock.ms_proveedores.model.Proveedor;
 import com.pokestock.ms_proveedores.repository.ProveedorRepository;
 import com.pokestock.ms_proveedores.service.ProveedorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProveedorServiceImpl implements ProveedorService {
 
     private final ProveedorRepository proveedorRepository;
 
     @Override
     public List<ProveedorResponseDTO> listarTodos() {
-        return proveedorRepository.findAll()
+        log.info("Listando todos los proveedores");
+        List<ProveedorResponseDTO> resultado = proveedorRepository.findAll()
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+        log.info("Se encontraron {} proveedores", resultado.size());
+        return resultado;
     }
 
     @Override
     public List<ProveedorResponseDTO> listarActivos() {
+        log.info("Listando proveedores activos");
         return proveedorRepository.findByActivoTrue()
                 .stream()
                 .map(this::toResponse)
@@ -36,16 +42,23 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     public ProveedorResponseDTO obtenerPorId(Long id) {
+        log.info("Buscando proveedor con id: {}", id);
         Proveedor proveedor = proveedorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Proveedor no encontrado con id: {}", id);
+                    return new RuntimeException("Proveedor no encontrado con id: " + id);
+                });
+        log.info("Proveedor encontrado: {}", proveedor.getNombre());
         return toResponse(proveedor);
     }
 
     @Override
     @Transactional
     public ProveedorResponseDTO crear(ProveedorRequestDTO dto) {
-        // Validar email duplicado
+        log.info("Intentando crear proveedor con email: {}", dto.getEmail());
+
         proveedorRepository.findByEmail(dto.getEmail()).ifPresent(p -> {
+            log.warn("Validación fallida: ya existe un proveedor con el email: {}", dto.getEmail());
             throw new RuntimeException("Ya existe un proveedor con el email: " + dto.getEmail());
         });
 
@@ -57,18 +70,26 @@ public class ProveedorServiceImpl implements ProveedorService {
                 .activo(true)
                 .build();
 
-        return toResponse(proveedorRepository.save(proveedor));
+        Proveedor guardado = proveedorRepository.save(proveedor);
+        log.info("Proveedor creado exitosamente con id: {}", guardado.getId());
+        return toResponse(guardado);
     }
 
     @Override
     @Transactional
     public ProveedorResponseDTO actualizar(Long id, ProveedorRequestDTO dto) {
-        Proveedor proveedor = proveedorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
+        log.info("Actualizando proveedor con id: {}", id);
 
-        // Validar email duplicado solo si cambió
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Proveedor no encontrado para actualizar, id: {}", id);
+                    return new RuntimeException("Proveedor no encontrado con id: " + id);
+                });
+
         if (!proveedor.getEmail().equalsIgnoreCase(dto.getEmail())) {
+            log.info("Validando nuevo email: {}", dto.getEmail());
             proveedorRepository.findByEmail(dto.getEmail()).ifPresent(p -> {
+                log.warn("Validación fallida: email duplicado al actualizar: {}", dto.getEmail());
                 throw new RuntimeException("Ya existe un proveedor con el email: " + dto.getEmail());
             });
         }
@@ -78,19 +99,27 @@ public class ProveedorServiceImpl implements ProveedorService {
         proveedor.setPais(dto.getPais());
         proveedor.setEmail(dto.getEmail());
 
-        return toResponse(proveedorRepository.save(proveedor));
+        Proveedor actualizado = proveedorRepository.save(proveedor);
+        log.info("Proveedor actualizado exitosamente, id: {}", actualizado.getId());
+        return toResponse(actualizado);
     }
 
     @Override
     @Transactional
     public void desactivar(Long id) {
+        log.info("Desactivando proveedor con id: {}", id);
+
         Proveedor proveedor = proveedorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Proveedor no encontrado para desactivar, id: {}", id);
+                    return new RuntimeException("Proveedor no encontrado con id: " + id);
+                });
+
         proveedor.setActivo(false);
         proveedorRepository.save(proveedor);
+        log.info("Proveedor desactivado exitosamente, id: {}", id);
     }
 
-    // Mapper interno — privado, solo esta clase lo usa
     private ProveedorResponseDTO toResponse(Proveedor proveedor) {
         return ProveedorResponseDTO.builder()
                 .id(proveedor.getId())
