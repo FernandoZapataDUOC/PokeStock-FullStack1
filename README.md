@@ -17,7 +17,7 @@
 
 ---
 
-## 🎮 ¿Qué es PokeStock?
+## ❓ ¿Qué es PokeStock?
 
 **PokeStock** es un sistema backend creado para administrar un negocio ficticio de distribución de cartas Pokémon.
 
@@ -27,7 +27,7 @@ La idea no es solo guardar datos, sino simular cómo funcionaría un sistema rea
 
 ---
 
-## ✨ Características principales
+## 🎯 Características principales
 
 | Módulo | Descripción |
 |---|---|
