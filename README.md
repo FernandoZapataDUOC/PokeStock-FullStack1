@@ -1,7 +1,7 @@
 # 🃏 PokeStock
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" width="220" alt="PokeStock Logo">
+  <img src="./docs/pokestock-banner.png" width="700" alt="PokeStock Banner">
 </p>
 
 <p align="center">
