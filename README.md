@@ -14,7 +14,14 @@
   <img src="https://img.shields.io/badge/MySQL-Database-blue?style=for-the-badge&logo=mysql">
   <img src="https://img.shields.io/badge/Postman-API-orange?style=for-the-badge&logo=postman">
 </p>
+---
 
+## 👥 Colaboradores
+
+| Integrante | GitHub |
+|-----------|--------|
+| Fernando Zapata | [@DopeZeta](https://github.com/FernandoZapataDUOC) |
+| Benjamin Gomez | [@Benjamin Gómez](https://github.com/BenGomezDUOC) |
 ---
 
 ## ❓ ¿Qué es PokeStock?
@@ -27,16 +34,19 @@ La idea no es solo guardar datos, sino simular cómo funcionaría un sistema rea
 
 ---
 
-## 🎯 Características principales
+## 🧩 Microservicios
 
-| Módulo | Descripción |
-|---|---|
-| 🃏 Productos | Registro y gestión de productos Pokémon TCG |
-| 📦 Stock | Control de inventario disponible |
-| 🚚 Proveedores | Administración de proveedores |
-| 🧾 Movimientos | Registro de pedidos y movimientos |
-| 🔎 Consultas | Búsqueda de información por ID o listado general |
-| 🧪 Postman | Pruebas de endpoints REST |
+| Servicio | Puerto | Descripción |
+|----------|--------|-------------|
+| `eureka-server` | `8761` | Registro y descubrimiento de microservicios |
+| `api-gateway` | `8080` | Punto de entrada único del sistema |
+| `ms-productos` | `8086` | Catálogo de productos Pokémon TCG |
+| `ms-proveedores` | `8084` | Gestión de proveedores |
+| `ms-stock` | `8088` | Control de inventario |
+| `ms-documentos` | `8087` | Documentación de movimientos |
+| `ms-validaciones` | `8089` | Validación de reglas de negocio |
+| `ms-movimientos` | `8085` | Orquestador principal |
+| `ms-reportes` | `8090` | Reportes y auditoría |
 
 ---
 
@@ -47,7 +57,7 @@ Java 21
 Spring Boot
 Spring Web
 Spring Data JPA
-MySQL
+XAMPP con MySQL puerto 3307
 Lombok
 Validation
 Maven
