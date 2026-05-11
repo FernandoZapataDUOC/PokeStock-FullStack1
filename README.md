@@ -14,7 +14,6 @@
   <img src="https://img.shields.io/badge/MySQL-Database-blue?style=for-the-badge&logo=mysql">
   <img src="https://img.shields.io/badge/Postman-API-orange?style=for-the-badge&logo=postman">
 </p>
----
 
 ## 👥 Colaboradores
 
