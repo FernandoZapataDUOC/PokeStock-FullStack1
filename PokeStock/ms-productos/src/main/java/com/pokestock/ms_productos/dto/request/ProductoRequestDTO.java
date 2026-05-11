@@ -1,4 +1,4 @@
-package com.pokestock.ms_productos.request.dto;
+package com.pokestock.ms_productos.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;

@@ -1,7 +1,7 @@
 package com.pokestock.ms_productos.controller;
 
-import com.pokestock.ms_productos.dto.ProductoRequestDTO;
-import com.pokestock.ms_productos.dto.ProductoResponseDTO;
+import com.pokestock.ms_productos.dto.request.ProductoRequestDTO;
+import com.pokestock.ms_productos.dto.response.ProductoResponseDTO;
 import com.pokestock.ms_productos.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

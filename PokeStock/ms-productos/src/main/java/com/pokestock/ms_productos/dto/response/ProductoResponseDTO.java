@@ -1,4 +1,4 @@
-package com.pokestock.ms_productos.response.dto;
+package com.pokestock.ms_productos.dto.response;
 
 import lombok.*;
 

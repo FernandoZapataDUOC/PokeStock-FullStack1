@@ -1,7 +1,7 @@
-package com.pokestock.ms_productos.service;
+package com.pokestock.ms_productos.service.impl;
 
-import com.pokestock.ms_productos.dto.ProductoRequestDTO;
-import com.pokestock.ms_productos.dto.ProductoResponseDTO;
+import com.pokestock.ms_productos.dto.request.ProductoRequestDTO;
+import com.pokestock.ms_productos.dto.response.ProductoResponseDTO;
 import com.pokestock.ms_productos.model.Producto;
 import com.pokestock.ms_productos.repository.ProductoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ProductoService {
+public class ProductoServiceImpl {
 
     private final ProductoRepository productoRepository;
 
