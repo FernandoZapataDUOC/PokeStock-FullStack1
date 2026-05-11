@@ -2,7 +2,8 @@ package com.pokestock.ms_validaciones.controller;
 
 import com.pokestock.ms_validaciones.dto.ValidacionRequestDTO;
 import com.pokestock.ms_validaciones.dto.ValidacionResponseDTO;
-import com.pokestock.ms_validaciones.service.ValidacionService;
+import com.pokestock.ms_validaciones.service.impl.ValidacionServiceImpl;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ValidacionController {
 
-    private final ValidacionService validacionService;
+    private final ValidacionServiceImpl validacionService;
 
     @GetMapping("/movimiento/{movimientoId}")
     public ResponseEntity<List<ValidacionResponseDTO>> obtenerPorMovimiento(

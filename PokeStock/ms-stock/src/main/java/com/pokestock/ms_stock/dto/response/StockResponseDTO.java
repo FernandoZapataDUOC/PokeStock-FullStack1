@@ -1,4 +1,4 @@
-package com.pokestock.ms_stock.dto;
+package com.pokestock.ms_stock.dto.response;
 
 import lombok.*;
 import java.time.LocalDateTime;
