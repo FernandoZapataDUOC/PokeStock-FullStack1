@@ -44,32 +44,52 @@ public class MovimientoServiceImpl implements MovimientoService {
     @Override
     public MovimientoResponseDTO crear(MovimientoRequestDTO dto) {
 
-        // 1 — Validar que el producto existe y está activo
+        // Paso 1 — Verificar que el producto existe y está activo en ms-productos
         log.info("Validando producto id: {}", dto.getProductoId());
         ProductoClientDTO producto = productoClient.obtenerProducto(dto.getProductoId());
         if (producto == null || !producto.getActivo()) {
-            throw new RuntimeException("Producto no encontrado o inactivo: " + dto.getProductoId());
+            log.warn("Producto no encontrado o inactivo, id: {}", dto.getProductoId());
+            throw new RuntimeException(
+                    "Producto no encontrado o inactivo: " + dto.getProductoId());
         }
 
-        // 2 — Validar que el proveedor existe y está activo
+        // Paso 2 — Verificar que el proveedor existe y está activo en ms-proveedores
         log.info("Validando proveedor id: {}", dto.getProveedorId());
         ProveedorClientDTO proveedor = proveedorClient.obtenerProveedor(dto.getProveedorId());
         if (proveedor == null || !proveedor.getActivo()) {
-            throw new RuntimeException("Proveedor no encontrado o inactivo: " + dto.getProveedorId());
+            log.warn("Proveedor no encontrado o inactivo, id: {}", dto.getProveedorId());
+            throw new RuntimeException(
+                    "Proveedor no encontrado o inactivo: " + dto.getProveedorId());
         }
 
-        // 3 — Para SALIDA validar stock suficiente
+        // Paso 3 — Para SALIDA verificar que hay stock suficiente antes de crear
         if (dto.getTipo() == TipoMovimiento.SALIDA) {
-            log.info("Validando stock para producto id: {}", dto.getProductoId());
-            StockClientDTO stock = stockClient.obtenerStockPorProducto(dto.getProductoId());
+            log.info("Tipo SALIDA — validando stock disponible para producto id: {}",
+                    dto.getProductoId());
+
+            // ms-stock retorna List porque un producto puede tener múltiples lotes
+            List<StockClientDTO> stocks = stockClient
+                    .obtenerStockPorProducto(dto.getProductoId());
+
+            // Tomar el primer registro de stock disponible
+            StockClientDTO stock = (stocks != null && !stocks.isEmpty())
+                    ? stocks.get(0) : null;
+
             if (stock == null || stock.getCantidad() < dto.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente. Disponible: "
+                log.warn("Stock insuficiente para producto id: {}. Disponible: {}, solicitado: {}",
+                        dto.getProductoId(),
+                        stock != null ? stock.getCantidad() : 0,
+                        dto.getCantidad());
+                throw new RuntimeException(
+                        "Stock insuficiente. Disponible: "
                         + (stock != null ? stock.getCantidad() : 0)
                         + ", solicitado: " + dto.getCantidad());
-            }
         }
+    }
 
-        // 4 — Crear el movimiento en estado PENDIENTE
+        // Paso 4 — Persistir el movimiento; @PrePersist asigna PENDIENTE y fechas
+        log.info("Creando movimiento tipo: {} para producto id: {}",
+                dto.getTipo(), dto.getProductoId());
         Movimiento movimiento = Movimiento.builder()
                 .productoId(dto.getProductoId())
                 .proveedorId(dto.getProveedorId())
@@ -77,9 +97,11 @@ public class MovimientoServiceImpl implements MovimientoService {
                 .cantidad(dto.getCantidad())
                 .observacion(dto.getObservacion())
                 .build();
-        // @PrePersist asigna estado PENDIENTE y fechas automáticamente
 
-        return toResponse(movimientoRepository.save(movimiento));
+        Movimiento guardado = movimientoRepository.save(movimiento);
+        log.info("Movimiento creado exitosamente con id: {}, estado: {}",
+                guardado.getId(), guardado.getEstado());
+        return toResponse(guardado);
     }
 
     @Override
@@ -104,32 +126,48 @@ public class MovimientoServiceImpl implements MovimientoService {
 
     @Override
     public MovimientoResponseDTO completar(Long id) {
+        log.info("Intentando completar movimiento id: {}", id);
         Movimiento movimiento = buscarPorId(id);
 
+        // Solo se pueden completar movimientos previamente validados
         if (movimiento.getEstado() != EstadoMovimiento.VALIDADO) {
-            throw new RuntimeException("Solo se pueden completar movimientos en estado VALIDADO");
+            log.warn("Movimiento id: {} no está en estado VALIDADO, estado actual: {}",
+                    id, movimiento.getEstado());
+            throw new RuntimeException(
+                    "Solo se pueden completar movimientos en estado VALIDADO");
         }
 
-        // Actualizar stock según tipo de movimiento
-        StockClientDTO stock = stockClient.obtenerStockPorProducto(movimiento.getProductoId());
+        // Obtener lista de stock para el producto — ms-stock retorna List por diseño
+        List<StockClientDTO> stocks = stockClient
+                .obtenerStockPorProducto(movimiento.getProductoId());
+
+        // Tomar el primer registro de stock disponible
+        StockClientDTO stock = (stocks != null && !stocks.isEmpty())
+                ? stocks.get(0) : null;
 
         if (stock == null) {
-            throw new RuntimeException("No se encontró stock para el producto: "
+            log.warn("No se encontró stock para producto id: {}",
+                    movimiento.getProductoId());
+            throw new RuntimeException(
+                    "No se encontró stock para el producto: "
                     + movimiento.getProductoId());
-        }
+    }
 
-        if (movimiento.getTipo() == TipoMovimiento.ENTRADA) {
-            log.info("Aumentando stock {} unidades para producto {}",
-                    movimiento.getCantidad(), movimiento.getProductoId());
-            stockClient.aumentarStock(stock.getId(), movimiento.getCantidad());
-        } else {
-            log.info("Descontando stock {} unidades para producto {}",
-                    movimiento.getCantidad(), movimiento.getProductoId());
-            stockClient.descontarStock(stock.getId(), movimiento.getCantidad());
-        }
+    // Aplicar el movimiento al stock según su tipo
+    if (movimiento.getTipo() == TipoMovimiento.ENTRADA) {
+        log.info("ENTRADA — aumentando {} unidades en stock id: {} para producto id: {}",
+                movimiento.getCantidad(), stock.getId(), movimiento.getProductoId());
+        stockClient.aumentarStock(stock.getId(), movimiento.getCantidad());
+    } else {
+        log.info("SALIDA — descontando {} unidades de stock id: {} para producto id: {}",
+                movimiento.getCantidad(), stock.getId(), movimiento.getProductoId());
+        stockClient.descontarStock(stock.getId(), movimiento.getCantidad());
+    }
 
-        movimiento.setEstado(EstadoMovimiento.COMPLETADO);
-        return toResponse(movimientoRepository.save(movimiento));
+    movimiento.setEstado(EstadoMovimiento.COMPLETADO);
+    Movimiento completado = movimientoRepository.save(movimiento);
+    log.info("Movimiento id: {} completado exitosamente, stock actualizado", id);
+    return toResponse(completado);
     }
 
     @Override
@@ -163,4 +201,5 @@ public class MovimientoServiceImpl implements MovimientoService {
         dto.setFechaActualizacion(m.getFechaActualizacion());
         return dto;
     }
+
 }
