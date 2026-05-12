@@ -37,6 +37,7 @@ public class Proveedor {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean activo = true;
 }

@@ -36,6 +36,7 @@ public class Producto {
     @Column(name = "anio_lanzamiento", nullable = false)
     private Integer anioLanzamiento;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean activo = true;
 }

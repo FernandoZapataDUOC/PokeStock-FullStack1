@@ -54,6 +54,7 @@ public class ValidacionServiceImpl implements ValidacionService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public ValidacionResponseDTO validarMovimiento(ValidacionRequestDTO dto) {
         log.info("Iniciando validacion para movimiento id: {}", dto.getMovimientoId());
 
@@ -66,7 +67,6 @@ public class ValidacionServiceImpl implements ValidacionService {
                 .estado(estado)
                 .observacion(dto.getObservacion())
                 .build();
-
         Validacion guardada = validacionRepository.save(validacion);
         log.info("Validacion registrada exitosamente con id: {}, estado: {}",
                 guardada.getId(), guardada.getEstado());
@@ -75,6 +75,7 @@ public class ValidacionServiceImpl implements ValidacionService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public ValidacionResponseDTO aprobarManualmente(Long movimientoId) {
         log.info("Aprobacion manual iniciada para movimiento id: {}", movimientoId);
 
@@ -83,7 +84,6 @@ public class ValidacionServiceImpl implements ValidacionService {
                 .estado(EstadoValidacion.APROBADO)
                 .observacion("Aprobado manualmente por supervisor")
                 .build();
-
         Validacion guardada = validacionRepository.save(validacion);
         log.info("Movimiento id: {} aprobado manualmente, validacion id: {}",
                 movimientoId, guardada.getId());
@@ -92,6 +92,7 @@ public class ValidacionServiceImpl implements ValidacionService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public ValidacionResponseDTO rechazarManualmente(Long movimientoId, String motivo) {
         log.info("Rechazo manual iniciado para movimiento id: {}", movimientoId);
 
@@ -107,7 +108,6 @@ public class ValidacionServiceImpl implements ValidacionService {
                 .estado(EstadoValidacion.RECHAZADO)
                 .observacion(motivo)
                 .build();
-
         Validacion guardada = validacionRepository.save(validacion);
         log.info("Movimiento id: {} rechazado manualmente, motivo: {}",
                 movimientoId, motivo);

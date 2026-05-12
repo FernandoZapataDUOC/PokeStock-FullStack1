@@ -41,6 +41,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public ProveedorResponseDTO obtenerPorId(Long id) {
         log.info("Buscando proveedor con id: {}", id);
         Proveedor proveedor = proveedorRepository.findById(id)
@@ -54,6 +55,7 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public ProveedorResponseDTO crear(ProveedorRequestDTO dto) {
         log.info("Intentando crear proveedor con email: {}", dto.getEmail());
 
@@ -69,7 +71,6 @@ public class ProveedorServiceImpl implements ProveedorService {
                 .email(dto.getEmail())
                 .activo(true)
                 .build();
-
         Proveedor guardado = proveedorRepository.save(proveedor);
         log.info("Proveedor creado exitosamente con id: {}", guardado.getId());
         return toResponse(guardado);
@@ -77,9 +78,9 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public ProveedorResponseDTO actualizar(Long id, ProveedorRequestDTO dto) {
         log.info("Actualizando proveedor con id: {}", id);
-
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Proveedor no encontrado para actualizar, id: {}", id);
@@ -110,9 +111,9 @@ public class ProveedorServiceImpl implements ProveedorService {
     // movimientos históricos asociados. Se desactiva con activo=false.
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public void desactivar(Long id) {
         log.info("Desactivando proveedor con id: {}", id);
-
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Proveedor no encontrado para desactivar, id: {}", id);

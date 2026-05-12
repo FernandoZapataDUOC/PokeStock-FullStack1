@@ -46,6 +46,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public StockResponseDTO obtenerPorId(Long id) {
         log.info("Buscando registro de stock con id: {}", id);
         Stock stock = stockRepository.findById(id)
@@ -61,6 +62,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public StockResponseDTO crearStock(StockRequestDTO dto) {
         log.info("Intentando crear stock para producto id: {}, lote: {}",
                 dto.getProductoId(), dto.getLote());
@@ -80,7 +82,6 @@ public class StockServiceImpl implements StockService {
                 .cantidad(dto.getCantidad())
                 .ubicacion(dto.getUbicacion())
                 .build();
-
         Stock guardado = stockRepository.save(stock);
         log.info("Stock creado exitosamente con id: {}, cantidad inicial: {}",
                 guardado.getId(), guardado.getCantidad());
@@ -89,6 +90,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public StockResponseDTO aumentarStock(Long id, Integer cantidad) {
         log.info("Aumentando stock id: {} en {} unidades", id, cantidad);
 
@@ -98,7 +100,6 @@ public class StockServiceImpl implements StockService {
             throw new IllegalArgumentException(
                     "La cantidad a aumentar debe ser mayor a 0");
         }
-
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Stock no encontrado para aumentar, id: {}", id);
@@ -116,6 +117,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public StockResponseDTO descontarStock(Long id, Integer cantidad) {
         log.info("Descontando stock id: {} en {} unidades", id, cantidad);
 
@@ -125,7 +127,6 @@ public class StockServiceImpl implements StockService {
             throw new IllegalArgumentException(
                     "La cantidad a descontar debe ser mayor a 0");
         }
-
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Stock no encontrado para descontar, id: {}", id);

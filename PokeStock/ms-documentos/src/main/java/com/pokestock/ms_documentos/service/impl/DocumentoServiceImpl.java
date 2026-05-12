@@ -56,6 +56,7 @@ public class DocumentoServiceImpl implements DocumentoService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public DocumentoResponseDTO obtenerPorId(Long id) {
         log.info("Buscando documento con id: {}", id);
         Documento doc = documentoRepository.findById(id)
@@ -69,6 +70,7 @@ public class DocumentoServiceImpl implements DocumentoService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public DocumentoResponseDTO registrar(DocumentoRequestDTO dto) {
         log.info("Registrando documento tipo: {} para movimiento id: {}",
                 dto.getTipo(), dto.getMovimientoId());
@@ -80,7 +82,6 @@ public class DocumentoServiceImpl implements DocumentoService {
                 .observacion(dto.getObservacion())
                 .validado(false)
                 .build();
-
         Documento guardado = documentoRepository.save(doc);
         log.info("Documento registrado exitosamente con id: {}", guardado.getId());
         return toResponse(guardado);
@@ -88,9 +89,9 @@ public class DocumentoServiceImpl implements DocumentoService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public DocumentoResponseDTO validar(Long id, ValidarDocumentoRequestDTO dto) {
         log.info("Intentando validar documento con id: {}", id);
-
         Documento doc = documentoRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Documento no encontrado para validar, id: {}", id);

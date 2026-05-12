@@ -32,6 +32,7 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public ProductoResponseDTO obtenerPorId(Long id) {
         log.info("Buscando producto con id: {}", id);
         Producto producto = productoRepository.findById(id)
@@ -47,10 +48,10 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public ProductoResponseDTO crearProducto(ProductoRequestDTO dto) {
         log.info("Intentando crear producto: {} - edicion: {}",
                 dto.getNombre(), dto.getEdicion());
-
         if (productoRepository.existsByNombreAndEdicion(
                 dto.getNombre(), dto.getEdicion())) {
             log.warn("Validacion fallida: ya existe producto '{}' en edicion '{}'",
@@ -76,9 +77,9 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public ProductoResponseDTO actualizarProducto(Long id, ProductoRequestDTO dto) {
         log.info("Actualizando producto con id: {}", id);
-
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Producto no encontrado para actualizar, id: {}", id);
@@ -99,9 +100,9 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public void desactivarProducto(Long id) {
         log.info("Desactivando producto con id: {}", id);
-
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Producto no encontrado para desactivar, id: {}", id);

@@ -32,6 +32,7 @@ public class Documento {
     @Column(nullable = false)
     private String archivo;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean validado = false;
 

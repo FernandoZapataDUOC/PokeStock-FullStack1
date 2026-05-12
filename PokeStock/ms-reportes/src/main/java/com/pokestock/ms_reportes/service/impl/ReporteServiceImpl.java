@@ -115,6 +115,7 @@ public class ReporteServiceImpl implements ReporteService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public ReporteResponseDTO obtenerPorId(Long id) {
         Reporte reporte = reporteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reporte no encontrado con id: " + id));
@@ -124,7 +125,9 @@ public class ReporteServiceImpl implements ReporteService {
     // Los resultados de cada reporte se serializan como JSON y se persisten en la BD.
     // Esto permite auditoría histórica: se puede ver cómo estaba el inventario
     // en una fecha pasada sin necesidad de recalcular.
+    @SuppressWarnings("null")
     private Reporte guardarReporte(TipoReporte tipo, Object data, String descripcion) {
+        
         try {
             String json = objectMapper.writeValueAsString(data);
             Reporte reporte = Reporte.builder()

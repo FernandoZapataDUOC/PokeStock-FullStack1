@@ -1,4 +1,3 @@
-// service/impl/MovimientoServiceImpl.java
 package com.pokestock.ms_movimientos.service.impl;
 
 import com.pokestock.ms_movimientos.client.*;
@@ -42,6 +41,7 @@ public class MovimientoServiceImpl implements MovimientoService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public MovimientoResponseDTO crear(MovimientoRequestDTO dto) {
 
         // Paso 1 — Verificar que el producto existe y está activo en ms-productos
@@ -187,7 +187,8 @@ public class MovimientoServiceImpl implements MovimientoService {
         movimiento.setObservacion(motivo);
         return toResponse(movimientoRepository.save(movimiento));
     }
-
+    
+    @SuppressWarnings("null")
     private Movimiento buscarPorId(Long id) {
         return movimientoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Movimiento no encontrado con id: " + id));
