@@ -61,7 +61,8 @@ public class MovimientoServiceImpl implements MovimientoService {
             throw new RuntimeException(
                     "Proveedor no encontrado o inactivo: " + dto.getProveedorId());
         }
-
+        // Para SALIDA: ms-stock devuelve List porque un producto puede tener
+        // stock en múltiples lotes. Se toma el primer registro disponible.
         // Paso 3 — Para SALIDA verificar que hay stock suficiente antes de crear
         if (dto.getTipo() == TipoMovimiento.SALIDA) {
             log.info("Tipo SALIDA — validando stock disponible para producto id: {}",
@@ -112,6 +113,8 @@ public class MovimientoServiceImpl implements MovimientoService {
             throw new RuntimeException("Solo se pueden validar movimientos en estado PENDIENTE");
         }
 
+        // Un movimiento no puede validarse sin respaldo documental.
+        // Se consulta ms-documentos via Feign para verificar la existencia de al menos un documento.
         List<DocumentoClientDTO> documentos = documentoClient
             .obtenerDocumentosPorMovimiento(id);
 
@@ -152,7 +155,9 @@ public class MovimientoServiceImpl implements MovimientoService {
                     "No se encontró stock para el producto: "
                     + movimiento.getProductoId());
     }
-
+    
+    // Se aplica el movimiento al stock según su tipo:
+    // ENTRADA → aumenta cantidad, SALIDA → descuenta cantidad
     // Aplicar el movimiento al stock según su tipo
     if (movimiento.getTipo() == TipoMovimiento.ENTRADA) {
         log.info("ENTRADA — aumentando {} unidades en stock id: {} para producto id: {}",

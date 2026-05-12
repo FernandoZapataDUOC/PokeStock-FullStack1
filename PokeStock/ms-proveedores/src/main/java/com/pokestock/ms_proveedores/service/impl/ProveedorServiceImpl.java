@@ -85,7 +85,9 @@ public class ProveedorServiceImpl implements ProveedorService {
                     log.warn("Proveedor no encontrado para actualizar, id: {}", id);
                     return new RuntimeException("Proveedor no encontrado con id: " + id);
                 });
-
+                
+        // Validación de email duplicado al actualizar: solo se verifica si el email cambió,
+        // para evitar falsos positivos al actualizar otros campos sin tocar el email.
         if (!proveedor.getEmail().equalsIgnoreCase(dto.getEmail())) {
             log.info("Validando nuevo email: {}", dto.getEmail());
             proveedorRepository.findByEmail(dto.getEmail()).ifPresent(p -> {
@@ -104,6 +106,8 @@ public class ProveedorServiceImpl implements ProveedorService {
         return toResponse(actualizado);
     }
 
+    // Soft delete: no se eliminan proveedores físicamente porque pueden tener
+    // movimientos históricos asociados. Se desactiva con activo=false.
     @Override
     @Transactional
     public void desactivar(Long id) {

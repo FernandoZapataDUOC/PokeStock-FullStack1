@@ -51,6 +51,8 @@ public class Movimiento {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
+    // @PrePersist garantiza que todo movimiento nazca en estado PENDIENTE.
+    // El cliente no puede establecer el estado inicial — lo controla el servidor.
     // Se ejecuta automáticamente antes de persistir
     @PrePersist
     public void prePersist() {
@@ -59,6 +61,7 @@ public class Movimiento {
         this.estado = EstadoMovimiento.PENDIENTE;
     }
 
+    // @PreUpdate actualiza la fecha automáticamente en cada modificación de estado.
     @PreUpdate
     public void preUpdate() {
         this.fechaActualizacion = LocalDateTime.now();

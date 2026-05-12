@@ -10,16 +10,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 /**
- * Cliente Feign para comunicación con ms-stock.
- * Permite consultar y modificar el stock de productos
- * sin acoplamiento directo entre microservicios.
+ * Cliente Feign para comunicación con ms-stock via Eureka.
+ * El nombre "ms-stock" debe coincidir exactamente con spring.application.name
+ * del servicio destino para que Eureka resuelva la instancia correctamente.
  */
 @FeignClient(name = "ms-stock")
 public interface StockClient {
 
     /**
      * Obtiene todos los registros de stock asociados a un producto.
-     * Retorna List porque un producto puede tener stock en múltiples lotes.
+     * Retorna List porque un producto puede tener stock distribuido en múltiples lotes.
+     * El orquestador (ms-movimientos) toma el primer registro disponible.
      */
     @GetMapping("/api/stock/producto/{productoId}")
     List<StockClientDTO> obtenerStockPorProducto(@PathVariable Long productoId);

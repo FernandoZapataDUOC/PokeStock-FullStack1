@@ -96,7 +96,9 @@ public class DocumentoServiceImpl implements DocumentoService {
                     log.warn("Documento no encontrado para validar, id: {}", id);
                     return new RuntimeException("Documento no encontrado con id: " + id);
                 });
-
+            
+        // Un documento validado no puede validarse nuevamente.
+        // Esta restricción evita doble contabilidad en auditorías.
         if (doc.getValidado()) {
             log.warn("Validación fallida: documento id: {} ya fue validado anteriormente", id);
             throw new RuntimeException("El documento ya fue validado anteriormente");

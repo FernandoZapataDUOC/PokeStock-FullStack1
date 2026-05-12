@@ -132,7 +132,10 @@ public class StockServiceImpl implements StockService {
                     return new EntityNotFoundException(
                             "Stock no encontrado con id: " + id);
                 });
-
+        
+        // Validación de stock negativo: no se puede descontar más de lo disponible.
+        // Esta regla también se verifica en ms-movimientos antes de crear una SALIDA,
+        // pero se duplica aquí como segunda línea de defensa.
         if (stock.getCantidad() < cantidad) {
             log.warn("Validacion fallida: stock insuficiente. Disponible: {}, solicitado: {}",
                     stock.getCantidad(), cantidad);

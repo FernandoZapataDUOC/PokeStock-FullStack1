@@ -40,7 +40,8 @@ public class ReporteServiceImpl implements ReporteService {
         List<StockClientDTO> stocks = stockClient.listarStock();
         List<ProductoClientDTO> productos = productoClient.listarProductos();
 
-        // Construir items cruzando stock con producto
+        // Se cruzan datos de ms-stock con ms-productos para obtener nombres legibles.
+        // ms-stock solo conoce productoId — ms-productos provee el nombre y tipo.
         List<ItemInventarioDTO> items = stocks.stream().map(stock -> {
             ItemInventarioDTO item = new ItemInventarioDTO();
             item.setProductoId(stock.getProductoId());
@@ -120,7 +121,9 @@ public class ReporteServiceImpl implements ReporteService {
         return toResponse(reporte);
     }
 
-    // Persiste cualquier objeto como JSON en la tabla reportes
+    // Los resultados de cada reporte se serializan como JSON y se persisten en la BD.
+    // Esto permite auditoría histórica: se puede ver cómo estaba el inventario
+    // en una fecha pasada sin necesidad de recalcular.
     private Reporte guardarReporte(TipoReporte tipo, Object data, String descripcion) {
         try {
             String json = objectMapper.writeValueAsString(data);
