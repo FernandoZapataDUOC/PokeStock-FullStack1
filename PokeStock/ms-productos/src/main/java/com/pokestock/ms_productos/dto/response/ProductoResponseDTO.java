@@ -15,4 +15,5 @@ public class ProductoResponseDTO {
     private String idioma;
     private Integer anioLanzamiento;
     private Boolean activo;
+    private CategoriaResponseDTO categoria;
 }

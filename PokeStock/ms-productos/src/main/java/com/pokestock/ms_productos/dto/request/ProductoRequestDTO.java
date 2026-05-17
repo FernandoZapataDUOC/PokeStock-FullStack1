@@ -23,4 +23,7 @@ public class ProductoRequestDTO {
 
     @NotNull(message = "El año de lanzamiento es obligatorio")
     private Integer anioLanzamiento;
+
+    // Opcional — puede crearse un producto sin categoría
+    private Long categoriaId;
 }
