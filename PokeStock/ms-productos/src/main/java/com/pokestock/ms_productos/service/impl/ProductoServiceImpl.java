@@ -1,8 +1,11 @@
 package com.pokestock.ms_productos.service.impl;
 
 import com.pokestock.ms_productos.dto.request.ProductoRequestDTO;
+import com.pokestock.ms_productos.dto.response.CategoriaResponseDTO;
 import com.pokestock.ms_productos.dto.response.ProductoResponseDTO;
+import com.pokestock.ms_productos.model.Categoria;
 import com.pokestock.ms_productos.model.Producto;
+import com.pokestock.ms_productos.repository.CategoriaRepository;
 import com.pokestock.ms_productos.repository.ProductoRepository;
 import com.pokestock.ms_productos.service.ProductoService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +21,7 @@ import java.util.List;
 public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
 
     @Override
     public List<ProductoResponseDTO> listarActivos() {
@@ -74,6 +78,17 @@ public class ProductoServiceImpl implements ProductoService {
                         "' en la edición '" + dto.getEdicion() + "'");
             }
 
+            Categoria categoria = null;
+            if (dto.getCategoriaId() != null) {
+                categoria = categoriaRepository.findById(dto.getCategoriaId())
+                        .orElseThrow(() -> {
+                            log.warn("Categoria no encontrada con id: {}",
+                                    dto.getCategoriaId());
+                            return new EntityNotFoundException(
+                                    "Categoria no encontrada con id: " + dto.getCategoriaId());
+                        });
+            }
+
             Producto producto = Producto.builder()
                     .nombre(dto.getNombre())
                     .tipo(dto.getTipo())
@@ -81,13 +96,14 @@ public class ProductoServiceImpl implements ProductoService {
                     .idioma(dto.getIdioma())
                     .anioLanzamiento(dto.getAnioLanzamiento())
                     .activo(true)
+                    .categoria(categoria)
                     .build();
 
             Producto guardado = productoRepository.save(producto);
             log.info("Producto creado exitosamente con id: {}", guardado.getId());
             return toResponseDTO(guardado);
 
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al crear producto: {}", e.getMessage());
@@ -107,6 +123,17 @@ public class ProductoServiceImpl implements ProductoService {
                         return new EntityNotFoundException(
                                 "Producto no encontrado con id: " + id);
                     });
+
+            if (dto.getCategoriaId() != null) {
+                Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                        .orElseThrow(() -> {
+                            log.warn("Categoria no encontrada con id: {}",
+                                    dto.getCategoriaId());
+                            return new EntityNotFoundException(
+                                    "Categoria no encontrada con id: " + dto.getCategoriaId());
+                        });
+                producto.setCategoria(categoria);
+            }
 
             producto.setNombre(dto.getNombre());
             producto.setTipo(dto.getTipo());
@@ -152,6 +179,14 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     private ProductoResponseDTO toResponseDTO(Producto producto) {
+        CategoriaResponseDTO categoriaDTO = null;
+        if (producto.getCategoria() != null) {
+            categoriaDTO = CategoriaResponseDTO.builder()
+                    .id(producto.getCategoria().getId())
+                    .nombre(producto.getCategoria().getNombre())
+                    .descripcion(producto.getCategoria().getDescripcion())
+                    .build();
+        }
         return ProductoResponseDTO.builder()
                 .id(producto.getId())
                 .nombre(producto.getNombre())
@@ -160,6 +195,7 @@ public class ProductoServiceImpl implements ProductoService {
                 .idioma(producto.getIdioma())
                 .anioLanzamiento(producto.getAnioLanzamiento())
                 .activo(producto.getActivo())
+                .categoria(categoriaDTO)
                 .build();
     }
 }
