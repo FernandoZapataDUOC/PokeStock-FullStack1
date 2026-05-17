@@ -39,4 +39,11 @@ public class Producto {
     @Builder.Default
     @Column(nullable = false)
     private Boolean activo = true;
+
+    // Muchos productos pertenecen a una categoria
+    // @JoinColumn define la columna FK en la tabla productos
+    // optional = true: un producto puede existir sin categoria asignada
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id", nullable = true)
+    private Categoria categoria;
 }
