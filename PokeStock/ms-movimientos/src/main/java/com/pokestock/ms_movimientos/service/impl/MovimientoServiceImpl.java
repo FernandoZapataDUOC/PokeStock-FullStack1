@@ -12,6 +12,7 @@ import com.pokestock.ms_movimientos.service.MovimientoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class MovimientoServiceImpl implements MovimientoService {
 
     @Override
     public List<MovimientoResponseDTO> listarTodos() {
+        log.info("Listando todos los movimientos");
         return movimientoRepository.findAll()
                 .stream()
                 .map(this::toResponse)
@@ -37,42 +39,66 @@ public class MovimientoServiceImpl implements MovimientoService {
 
     @Override
     public MovimientoResponseDTO obtenerPorId(Long id) {
+        log.info("Buscando movimiento con id: {}", id);
         return toResponse(buscarPorId(id));
     }
 
     @Override
+    @Transactional
     @SuppressWarnings("null")
     public MovimientoResponseDTO crear(MovimientoRequestDTO dto) {
 
-        // Paso 1 — Verificar que el producto existe y está activo en ms-productos
+        // Paso 1 — Verificar producto en ms-productos via Feign
         log.info("Validando producto id: {}", dto.getProductoId());
-        ProductoClientDTO producto = productoClient.obtenerProducto(dto.getProductoId());
+        ProductoClientDTO producto;
+        try {
+            producto = productoClient.obtenerProducto(dto.getProductoId());
+        } catch (Exception e) {
+            log.error("Error al consultar ms-productos para id {}: {}",
+                    dto.getProductoId(), e.getMessage());
+            throw new RuntimeException(
+                    "No se pudo verificar el producto. Servicio no disponible.");
+        }
+
         if (producto == null || !producto.getActivo()) {
             log.warn("Producto no encontrado o inactivo, id: {}", dto.getProductoId());
             throw new RuntimeException(
                     "Producto no encontrado o inactivo: " + dto.getProductoId());
         }
 
-        // Paso 2 — Verificar que el proveedor existe y está activo en ms-proveedores
+        // Paso 2 — Verificar proveedor en ms-proveedores via Feign
         log.info("Validando proveedor id: {}", dto.getProveedorId());
-        ProveedorClientDTO proveedor = proveedorClient.obtenerProveedor(dto.getProveedorId());
+        ProveedorClientDTO proveedor;
+        try {
+            proveedor = proveedorClient.obtenerProveedor(dto.getProveedorId());
+        } catch (Exception e) {
+            log.error("Error al consultar ms-proveedores para id {}: {}",
+                    dto.getProveedorId(), e.getMessage());
+            throw new RuntimeException(
+                    "No se pudo verificar el proveedor. Servicio no disponible.");
+        }
+
         if (proveedor == null || !proveedor.getActivo()) {
             log.warn("Proveedor no encontrado o inactivo, id: {}", dto.getProveedorId());
             throw new RuntimeException(
                     "Proveedor no encontrado o inactivo: " + dto.getProveedorId());
         }
-        // Para SALIDA: ms-stock devuelve List porque un producto puede tener
-        // stock en múltiples lotes. Se toma el primer registro disponible.
-        // Paso 3 — Para SALIDA verificar que hay stock suficiente antes de crear
+
+        // Paso 3 — Para SALIDA: verificar stock suficiente en ms-stock via Feign
+        // ms-stock retorna List porque un producto puede tener múltiples lotes
         if (dto.getTipo() == TipoMovimiento.SALIDA) {
-            log.info("Tipo SALIDA — validando stock disponible para producto id: {}",
+            log.info("Tipo SALIDA — validando stock para producto id: {}",
                     dto.getProductoId());
+            List<StockClientDTO> stocks;
+            try {
+                stocks = stockClient.obtenerStockPorProducto(dto.getProductoId());
+            } catch (Exception e) {
+                log.error("Error al consultar ms-stock para producto id {}: {}",
+                        dto.getProductoId(), e.getMessage());
+                throw new RuntimeException(
+                        "No se pudo verificar el stock. Servicio no disponible.");
+            }
 
-            // ms-stock retorna List porque un producto puede tener múltiples lotes
-            List<StockClientDTO> stocks = stockClient
-                    .obtenerStockPorProducto(dto.getProductoId());
-
-            // Tomar el primer registro de stock disponible
             StockClientDTO stock = (stocks != null && !stocks.isEmpty())
                     ? stocks.get(0) : null;
 
@@ -85,8 +111,8 @@ public class MovimientoServiceImpl implements MovimientoService {
                         "Stock insuficiente. Disponible: "
                         + (stock != null ? stock.getCantidad() : 0)
                         + ", solicitado: " + dto.getCantidad());
+            }
         }
-    }
 
         // Paso 4 — Persistir el movimiento; @PrePersist asigna PENDIENTE y fechas
         log.info("Creando movimiento tipo: {} para producto id: {}",
@@ -106,33 +132,46 @@ public class MovimientoServiceImpl implements MovimientoService {
     }
 
     @Override
+    @Transactional
     public MovimientoResponseDTO validar(Long id) {
+        log.info("Intentando validar movimiento id: {}", id);
         Movimiento movimiento = buscarPorId(id);
 
         if (movimiento.getEstado() != EstadoMovimiento.PENDIENTE) {
-            throw new RuntimeException("Solo se pueden validar movimientos en estado PENDIENTE");
+            log.warn("Movimiento id: {} no está en estado PENDIENTE", id);
+            throw new RuntimeException(
+                    "Solo se pueden validar movimientos en estado PENDIENTE");
         }
 
-        // Un movimiento no puede validarse sin respaldo documental.
-        // Se consulta ms-documentos via Feign para verificar la existencia de al menos un documento.
-        List<DocumentoClientDTO> documentos = documentoClient
-            .obtenerDocumentosPorMovimiento(id);
+        // Un movimiento no puede validarse sin respaldo documental
+        List<DocumentoClientDTO> documentos;
+        try {
+            documentos = documentoClient.obtenerDocumentosPorMovimiento(id);
+        } catch (Exception e) {
+            log.error("Error al consultar ms-documentos para movimiento id {}: {}",
+                    id, e.getMessage());
+            throw new RuntimeException(
+                    "No se pudo verificar la documentación. Servicio no disponible.");
+        }
 
         if (documentos == null || documentos.isEmpty()) {
-        throw new RuntimeException(
-            "No se puede validar un movimiento sin documentos asociados");
+            log.warn("Validacion fallida: movimiento id {} sin documentos asociados", id);
+            throw new RuntimeException(
+                    "No se puede validar un movimiento sin documentos asociados");
         }
 
         movimiento.setEstado(EstadoMovimiento.VALIDADO);
-        return toResponse(movimientoRepository.save(movimiento));
+        Movimiento validado = movimientoRepository.save(movimiento);
+        log.info("Movimiento id: {} validado exitosamente", id);
+        return toResponse(validado);
     }
 
     @Override
+    @Transactional
     public MovimientoResponseDTO completar(Long id) {
         log.info("Intentando completar movimiento id: {}", id);
         Movimiento movimiento = buscarPorId(id);
 
-        // Solo se pueden completar movimientos previamente validados
         if (movimiento.getEstado() != EstadoMovimiento.VALIDADO) {
             log.warn("Movimiento id: {} no está en estado VALIDADO, estado actual: {}",
                     id, movimiento.getEstado());
@@ -140,11 +179,17 @@ public class MovimientoServiceImpl implements MovimientoService {
                     "Solo se pueden completar movimientos en estado VALIDADO");
         }
 
-        // Obtener lista de stock para el producto — ms-stock retorna List por diseño
-        List<StockClientDTO> stocks = stockClient
-                .obtenerStockPorProducto(movimiento.getProductoId());
+        // Obtener stock del producto — ms-stock retorna List por diseño de lotes
+        List<StockClientDTO> stocks;
+        try {
+            stocks = stockClient.obtenerStockPorProducto(movimiento.getProductoId());
+        } catch (Exception e) {
+            log.error("Error al consultar ms-stock para producto id {}: {}",
+                    movimiento.getProductoId(), e.getMessage());
+            throw new RuntimeException(
+                    "No se pudo obtener el stock. Servicio no disponible.");
+        }
 
-        // Tomar el primer registro de stock disponible
         StockClientDTO stock = (stocks != null && !stocks.isEmpty())
                 ? stocks.get(0) : null;
 
@@ -154,44 +199,56 @@ public class MovimientoServiceImpl implements MovimientoService {
             throw new RuntimeException(
                     "No se encontró stock para el producto: "
                     + movimiento.getProductoId());
-    }
-    
-    // Se aplica el movimiento al stock según su tipo:
-    // ENTRADA → aumenta cantidad, SALIDA → descuenta cantidad
-    // Aplicar el movimiento al stock según su tipo
-    if (movimiento.getTipo() == TipoMovimiento.ENTRADA) {
-        log.info("ENTRADA — aumentando {} unidades en stock id: {} para producto id: {}",
-                movimiento.getCantidad(), stock.getId(), movimiento.getProductoId());
-        stockClient.aumentarStock(stock.getId(), movimiento.getCantidad());
-    } else {
-        log.info("SALIDA — descontando {} unidades de stock id: {} para producto id: {}",
-                movimiento.getCantidad(), stock.getId(), movimiento.getProductoId());
-        stockClient.descontarStock(stock.getId(), movimiento.getCantidad());
-    }
+        }
 
-    movimiento.setEstado(EstadoMovimiento.COMPLETADO);
-    Movimiento completado = movimientoRepository.save(movimiento);
-    log.info("Movimiento id: {} completado exitosamente, stock actualizado", id);
-    return toResponse(completado);
+        // Aplicar al stock según tipo: ENTRADA aumenta, SALIDA descuenta
+        try {
+            if (movimiento.getTipo() == TipoMovimiento.ENTRADA) {
+                log.info("ENTRADA — aumentando {} unidades en stock id: {}",
+                        movimiento.getCantidad(), stock.getId());
+                stockClient.aumentarStock(stock.getId(), movimiento.getCantidad());
+            } else {
+                log.info("SALIDA — descontando {} unidades de stock id: {}",
+                        movimiento.getCantidad(), stock.getId());
+                stockClient.descontarStock(stock.getId(), movimiento.getCantidad());
+            }
+        } catch (Exception e) {
+            log.error("Error al actualizar stock en ms-stock para movimiento id {}: {}",
+                    id, e.getMessage());
+            throw new RuntimeException(
+                    "No se pudo actualizar el stock. Servicio no disponible.");
+        }
+
+        movimiento.setEstado(EstadoMovimiento.COMPLETADO);
+        Movimiento completado = movimientoRepository.save(movimiento);
+        log.info("Movimiento id: {} completado exitosamente", id);
+        return toResponse(completado);
     }
 
     @Override
+    @Transactional
     public MovimientoResponseDTO rechazar(Long id, String motivo) {
+        log.info("Rechazando movimiento id: {}", id);
         Movimiento movimiento = buscarPorId(id);
 
         if (movimiento.getEstado() == EstadoMovimiento.COMPLETADO) {
-            throw new RuntimeException("No se puede rechazar un movimiento ya completado");
+            log.warn("Intento de rechazar movimiento ya completado, id: {}", id);
+            throw new RuntimeException(
+                    "No se puede rechazar un movimiento ya completado");
         }
 
         movimiento.setEstado(EstadoMovimiento.RECHAZADO);
         movimiento.setObservacion(motivo);
-        return toResponse(movimientoRepository.save(movimiento));
+        Movimiento rechazado = movimientoRepository.save(movimiento);
+        log.info("Movimiento id: {} rechazado. Motivo: {}", id, motivo);
+        return toResponse(rechazado);
     }
-    
+
     @SuppressWarnings("null")
     private Movimiento buscarPorId(Long id) {
         return movimientoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Movimiento no encontrado con id: " + id));
+                .orElseThrow(() -> new RuntimeException(
+                        "Movimiento no encontrado con id: " + id));
     }
 
     private MovimientoResponseDTO toResponse(Movimiento m) {
@@ -207,5 +264,4 @@ public class MovimientoServiceImpl implements MovimientoService {
         dto.setFechaActualizacion(m.getFechaActualizacion());
         return dto;
     }
-
 }

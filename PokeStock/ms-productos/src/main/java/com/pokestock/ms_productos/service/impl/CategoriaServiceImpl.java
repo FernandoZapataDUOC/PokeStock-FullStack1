@@ -36,6 +36,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
+    @SuppressWarnings("null")
     public CategoriaResponseDTO obtenerPorId(Long id) {
         try {
             log.info("Buscando categoria con id: {}", id);
@@ -57,6 +58,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     @Transactional
+    @SuppressWarnings("null")
     public CategoriaResponseDTO crearCategoria(CategoriaRequestDTO dto) {
         try {
             log.info("Intentando crear categoria: {}", dto.getNombre());
@@ -67,7 +69,6 @@ public class CategoriaServiceImpl implements CategoriaService {
                 throw new IllegalStateException(
                         "Ya existe una categoria con el nombre: " + dto.getNombre());
             }
-
             Categoria categoria = Categoria.builder()
                     .nombre(dto.getNombre())
                     .descripcion(dto.getDescripcion())
