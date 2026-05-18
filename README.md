@@ -55,11 +55,8 @@ El objetivo de **PokeStock** es construir una solución backend basada en una ar
 | `ms-stock` | `8088` | Control de inventario |
 | `ms-validaciones` | `8089` | Validación de reglas de negocio |
 | `ms-reportes` | `8090` | Reportes y auditoría |
-| `ms-auth` | Por configurar | Autenticación |
-| `ms-security` | Por configurar | Seguridad |
-| `ms-usuarios` | Por configurar | Gestión de usuarios |
 
-> Los servicios `ms-auth`, `ms-security` y `ms-usuarios` se encuentran dentro de `PokeStock/Seguridad`.
+> **Seguridad** (`ms-auth`, `ms-security`, `ms-usuarios`): módulo creado pero **no implementado en esta entrega**. Se integrará en una fase posterior del proyecto.
 
 ---
 
@@ -67,21 +64,20 @@ El objetivo de **PokeStock** es construir una solución backend basada en una ar
 
 ```txt
 Java 21
-Spring Boot
+Spring Boot 3.5.x
 Spring Web
 Spring Data JPA
-Spring Cloud
-Eureka Server
-API Gateway
+Spring Cloud 2025.0.0
+Eureka Server / Eureka Client
+API Gateway (Spring Cloud Gateway)
 OpenFeign
-Spring Security
 XAMPP con MySQL puerto 3307
 Lombok
-Validation
+Bean Validation
 Maven
 Postman
 GitHub
-Visual Studio Code/Windsurf
+Visual Studio Code / Windsurf
 ```
 
 ---
@@ -94,13 +90,13 @@ Cada microservicio funciona como una aplicación Spring Boot independiente, con 
 
 La arquitectura considera:
 
-- **Eureka Server** para registrar y descubrir microservicios.
-- **API Gateway** como punto de entrada único.
-- **Microservicios de negocio** separados por responsabilidad.
-- **Comunicación entre servicios** mediante REST/OpenFeign.
-- **Persistencia real** con MySQL, JPA e Hibernate.
-- **Validaciones** mediante Bean Validation.
-- **Organización por capas** aplicando el patrón CSR.
+- **Eureka Server** para registrar y descubrir microservicios dinámicamente.
+- **API Gateway** como punto de entrada único para todos los clientes.
+- **Microservicios de negocio** separados por responsabilidad funcional.
+- **Comunicación entre servicios** mediante OpenFeign con resolución de instancias via Eureka.
+- **Persistencia real** con MySQL, JPA e Hibernate — una base de datos por microservicio.
+- **Validaciones** con Bean Validation (JSR 380).
+- **Organización por capas** aplicando el patrón CSR (Controller → Service → Repository).
 
 ---
 
@@ -110,327 +106,276 @@ La arquitectura considera:
 Cliente / Postman
        │
        ▼
-API Gateway
+  API Gateway (:8080)
        │
        ▼
-Eureka Server
+  Eureka Server (:8761)
        │
        ▼
-┌───────────────────┬───────────────────┬───────────────────┐
-│   ms-productos    │  ms-proveedores   │     ms-stock      │
-└───────────────────┴───────────────────┴───────────────────┘
-       │                   │                   │
-       └──────────────┬────┴────┬──────────────┘
-                      ▼         ▼
-              ms-validaciones  ms-documentos
-                      │         │
-                      ▼         ▼
-                     ms-movimientos
-                           │
-                           ▼
-                      ms-reportes
+┌──────────────┬────────────────┬───────────┐
+│ ms-productos │ ms-proveedores │  ms-stock │
+└──────────────┴────────────────┴───────────┘
+       │               │               │
+       └───────┬────────┴───────────────┘
+               ▼
+  ms-validaciones   ms-documentos
+               │           │
+               └─────┬─────┘
+                     ▼
+              ms-movimientos ← orquestador principal
+                     │
+                     ▼
+                ms-reportes
 ```
+
 ---
 
 ## 🧱 Patrón CSR
 
 Cada microservicio está organizado bajo el patrón **CSR**:
 
-```txt
-Controller → Service → Repository
-```
-
 | Capa | Responsabilidad |
 |------|----------------|
 | Controller | Recibe solicitudes HTTP y expone endpoints REST |
-| Service | Contiene la lógica de negocio y validaciones |
-| Repository | Accede a la base de datos mediante JPA |
-| Model/Entity | Representa las entidades persistentes |
-| DTO | Transporta datos entre capas o servicios |
+| Service (interfaz + impl) | Contiene la lógica de negocio y validaciones |
+| Repository | Accede a la base de datos mediante JpaRepository |
+| Model / Entity | Representa las entidades JPA persistentes |
+| DTO (request / response) | Transporta datos entre capas sin exponer entidades |
+| Client (Feign) | Consume endpoints de otros microservicios |
 
 ---
 
 ## ⚙️ Funcionalidades implementadas
 
-El sistema PokeStock implementa funcionalidades distribuidas en microservicios independientes.
+### 📦 Productos (`ms-productos` — puerto 8086)
+- CRUD completo de productos Pokémon TCG.
+- Gestión de categorías con relación `@OneToMany` → `@ManyToOne` (JPA real).
+- Un producto puede tener o no una categoría asignada.
+- Soft delete: los productos se desactivan, no se eliminan físicamente.
 
-### 📦 Productos
+### 🚚 Proveedores (`ms-proveedores` — puerto 8084)
+- CRUD completo de proveedores.
+- Validación de email único al crear y actualizar.
+- Soft delete: desactivación lógica para preservar historial.
 
-- Registro de productos Pokémon TCG.
-- Consulta de productos.
-- Actualización de información.
-- Eliminación o desactivación de productos.
-- Persistencia de datos en MySQL.
+### 📊 Stock (`ms-stock` — puerto 8088)
+- Control de cantidades disponibles por producto y lote.
+- Endpoints para aumentar y descontar stock.
+- Validación de stock negativo: no se puede descontar más de lo disponible.
 
-### 🚚 Proveedores
+### 🔄 Movimientos (`ms-movimientos` — puerto 8085)
+- Orquestador principal del sistema.
+- Registra entradas y salidas de inventario.
+- Valida producto (ms-productos), proveedor (ms-proveedores), stock (ms-stock) y documentación (ms-documentos) via Feign.
+- Manejo de errores Feign con try/catch para cada llamada remota.
+- Flujo de estados: `PENDIENTE` → `VALIDADO` → `COMPLETADO` / `RECHAZADO`.
+- Estado inicial forzado por `@PrePersist` — el cliente no puede establecerlo.
 
-- Registro de proveedores.
-- Consulta de proveedores.
-- Actualización de información de contacto.
-- Desactivación de proveedores.
-- Validación de proveedores activos.
+### 📄 Documentos (`ms-documentos` — puerto 8087)
+- Registro de documentos asociados a movimientos (facturas, guías, órdenes).
+- Validación de documento: no se puede validar dos veces el mismo documento.
+- Un movimiento no puede validarse sin al menos un documento registrado.
 
-### 📊 Stock
+### ✅ Validaciones (`ms-validaciones` — puerto 8089)
+- Registro de validaciones por movimiento.
+- Aprobación y rechazo manual con motivo obligatorio.
+- Determina estado según contenido de la observación.
 
-- Control de cantidades disponibles.
-- Consulta de inventario.
-- Actualización de stock.
-- Validación de disponibilidad antes de movimientos.
+### 📈 Reportes (`ms-reportes` — puerto 8090)
+- Reporte de inventario actual cruzando ms-stock con ms-productos.
+- Historial de movimientos.
+- Reporte por producto individual.
+- Los resultados se persisten como JSON para auditoría histórica.
 
-### 🔄 Movimientos
-
-- Registro de entradas y salidas de inventario.
-- Coordinación entre productos, stock, proveedores, validaciones y documentos.
-- Orquestación de operaciones principales del sistema.
-
-### 📄 Documentos
-
-- Registro de documentos asociados a movimientos.
-- Consulta de documentos.
-- Apoyo a la trazabilidad de operaciones.
-
-### ✅ Validaciones
-
-- Validación de reglas de negocio.
-- Verificación de datos antes de ejecutar operaciones.
-- Validación de stock, productos y proveedores.
-
-### 📈 Reportes
-
-- Consulta de reportes de inventario.
-- Auditoría de operaciones.
-- Seguimiento de movimientos registrados.
-
-### 🔐 Seguridad y usuarios
-
-- Gestión base de usuarios.
-- Separación de servicios de autenticación y seguridad.
-- Preparación para protección de endpoints.
+### 🔐 Seguridad (`ms-auth`, `ms-security`, `ms-usuarios`)
+> ⚠️ **No implementado en esta entrega.** Los servicios de seguridad están creados pero pendientes de implementación para una fase posterior del proyecto.
 
 ---
 
 ## 📌 Reglas de negocio principales
 
-El sistema considera reglas de negocio relacionadas con el inventario y distribución de productos Pokémon TCG:
-
-- No registrar salidas si no existe stock suficiente.
-- Validar la existencia de productos antes de operar con ellos.
-- Validar proveedores antes de asociarlos a operaciones.
-- Actualizar stock al registrar entradas o salidas.
-- Mantener trazabilidad de movimientos mediante documentos.
-- Evitar operaciones con datos incompletos o inválidos.
-- Retornar respuestas claras ante errores de validación.
+- No registrar salidas si no hay stock suficiente para la cantidad solicitada.
+- Validar que el producto existe y está activo antes de operar.
+- Validar que el proveedor existe y está activo antes de asociarlo.
+- Un movimiento no puede completarse sin haber sido validado primero.
+- Un movimiento no puede validarse sin al menos un documento asociado.
+- No se puede rechazar un movimiento ya completado.
+- Los documentos no pueden validarse más de una vez.
+- Proveedores y productos usan soft delete — no se eliminan físicamente.
 
 ---
 
 ## 🗄️ Base de datos
 
-El proyecto utiliza MySQL mediante XAMPP en el puerto:
+El proyecto usa MySQL a través de XAMPP en el puerto `3307`.
 
-```txt
-3307
+Cada microservicio tiene su propia base de datos independiente. Ejecutar el siguiente script antes de levantar los servicios:
+
+```sql
+CREATE DATABASE IF NOT EXISTS db_productos   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS db_proveedores CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS db_stock       CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS db_documentos  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS db_validaciones CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS db_movimientos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS db_reportes    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-La carpeta `BD` contiene archivos relacionados con la creación de bases de datos y scripts iniciales:
+> Las tablas se crean automáticamente al levantar cada servicio gracias a `spring.jpa.hibernate.ddl-auto=update`.
 
-```txt
-BD/Crear BD.txt
-BD/db_documentos.txt
-BD/db_proveedores.txt
-```
-
-Cada microservicio posee su propia configuración de persistencia en:
-
-```txt
-src/main/resources/application.properties
-```
-
-Ejemplo de configuración:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3307/db_productos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-spring.datasource.username=root
-spring.datasource.password=
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-spring.jpa.properties.hibernate.format_sql=true
-```
+La carpeta `BD/` del repositorio también contiene scripts adicionales de referencia.
 
 ---
 
-## ▶️ Pasos para ejecutar el proyecto
+## 🚀 Pasos para ejecutar el proyecto
 
-### 1. Requisitos previos
-
-Antes de ejecutar el sistema se necesita tener instalado:
+### 1. Prerrequisitos
 
 ```txt
 Java JDK 21
 Apache Maven
-XAMPP
-MySQL
+XAMPP (MySQL en puerto 3307)
+IntelliJ IDEA o VS Code / Windsurf
 Postman
-Git o GitHub Desktop
-Editor de codigo
+Git
 ```
 
----
-
-### 2. Clonar o descargar el repositorio
+### 2. Clonar el repositorio
 
 ```bash
 git clone https://github.com/FernandoZapataDUOC/PokeStock-FullStack1.git
 cd PokeStock-FullStack1
 ```
 
-Si se usa GitHub Desktop, basta con clonar el repositorio y abrir la carpeta local en su Editor de codigo.
+### 3. Iniciar MySQL
 
----
+Abrir XAMPP y arrancar el módulo **MySQL**. Verificar que esté corriendo en el puerto `3307`.
 
-### 3. Iniciar base de datos
+Luego ejecutar el script de creación de bases de datos del paso anterior.
 
-Abrir XAMPP e iniciar:
+### 4. Verificar configuración de cada servicio
 
-```txt
-Apache
-MySQL
-```
-
-Verificar que MySQL esté funcionando en el puerto:
-
-```txt
-3307
-```
-
-Luego crear las bases de datos necesarias o ejecutar los scripts incluidos en la carpeta `BD`.
-
----
-
-### 4. Verificar configuración
-
-Antes de levantar los servicios, revisar en cada microservicio el archivo:
-
-```txt
-src/main/resources/application.properties
-```
-
-Verificar:
+En cada microservicio revisar `src/main/resources/application.properties`:
 
 ```properties
-server.port=PUERTO_DEL_MICROSERVICIO
-spring.datasource.url=jdbc:mysql://localhost:3307/NOMBRE_BD
+server.port=PUERTO_DEL_SERVICIO
+spring.datasource.url=jdbc:mysql://localhost:3307/NOMBRE_BD?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 spring.datasource.username=root
 spring.datasource.password=
 ```
 
----
+### 5. Orden de arranque — obligatorio
 
-## 🚀 Orden recomendado de ejecución
+> ⚠️ El orden importa. Si se levanta el Gateway antes que Eureka, no podrá mapear los servicios.
 
-Para ejecutar cualquier microservicio se usa el siguiente formato general:
+```txt
+1.  eureka-server      → http://localhost:8761
+2.  ms-productos       → http://localhost:8086
+3.  ms-proveedores     → http://localhost:8084
+4.  ms-stock           → http://localhost:8088
+5.  ms-documentos      → http://localhost:8087
+6.  ms-validaciones    → http://localhost:8089
+7.  ms-movimientos     → http://localhost:8085
+8.  ms-reportes        → http://localhost:8090
+9.  api-gateway        → http://localhost:8080  ← siempre el último
+```
+
+Para levantar cada servicio desde terminal:
 
 ```bash
 cd PokeStock/NOMBRE_DEL_MICROSERVICIO
 mvn spring-boot:run
 ```
 
-Ejemplo:
+### 6. Verificar registro en Eureka
 
-```bash
-cd PokeStock/ms-productos
-mvn spring-boot:run
-```
-
-Para servicios dentro de la carpeta `Seguridad`, el formato es:
-
-```bash
-cd PokeStock/Seguridad/NOMBRE_DEL_MICROSERVICIO
-mvn spring-boot:run
-```
-
-Ejemplo:
-
-```bash
-cd PokeStock/Seguridad/ms-usuarios
-mvn spring-boot:run
-```
-
----
-
-### Orden de inicio
-
-Se recomienda levantar los servicios en este orden:
-
-```txt
-1. eureka-server
-2. api-gateway
-3. ms-productos
-4. ms-proveedores
-5. ms-stock
-6. ms-documentos
-7. ms-validaciones
-8. ms-movimientos
-9. ms-reportes
-10. ms-auth / ms-security / ms-usuarios
-```
-
-Eureka Server queda disponible en:
-
-```txt
-http://localhost:8761
-```
-
-API Gateway queda disponible en:
-
-```txt
-http://localhost:8080
-```
+Ir a `http://localhost:8761` y confirmar que todos los servicios aparecen con status **UP**.
 
 ---
 
 ## 🧪 Pruebas con Postman
 
-El sistema fue pensado para ser probado mediante Postman.
+Todas las peticiones van al **puerto 8080** (API Gateway). Eureka resuelve el servicio destino automáticamente.
 
-Se recomienda probar:
+### Ejemplos de endpoints principales
 
-- Endpoints CRUD de productos.
-- Endpoints CRUD de proveedores.
-- Consulta y actualización de stock.
-- Registro de movimientos.
-- Validaciones de reglas de negocio.
-- Generación o consulta de documentos.
-- Consulta de reportes.
-- Comunicación entre microservicios mediante API Gateway.
+```http
+# Productos
+GET    http://localhost:8080/api/productos
+GET    http://localhost:8080/api/productos/{id}
+POST   http://localhost:8080/api/productos
+PUT    http://localhost:8080/api/productos/{id}
+DELETE http://localhost:8080/api/productos/{id}
 
-Ejemplos de URLs base:
+# Proveedores
+GET    http://localhost:8080/api/proveedores
+POST   http://localhost:8080/api/proveedores
+PUT    http://localhost:8080/api/proveedores/{id}
+DELETE http://localhost:8080/api/proveedores/{id}
 
-```txt
-http://localhost:8080
-http://localhost:8084
-http://localhost:8085
-http://localhost:8086
-http://localhost:8087
-http://localhost:8088
-http://localhost:8089
-http://localhost:8090
+# Stock
+GET    http://localhost:8080/api/stock
+GET    http://localhost:8080/api/stock/producto/{productoId}
+POST   http://localhost:8080/api/stock
+PUT    http://localhost:8080/api/stock/{id}/aumentar?cantidad=10
+PUT    http://localhost:8080/api/stock/{id}/descontar?cantidad=5
+
+# Movimientos
+GET    http://localhost:8080/api/movimientos
+POST   http://localhost:8080/api/movimientos
+PUT    http://localhost:8080/api/movimientos/{id}/validar
+PUT    http://localhost:8080/api/movimientos/{id}/completar
+PUT    http://localhost:8080/api/movimientos/{id}/rechazar
+
+# Documentos
+GET    http://localhost:8080/api/documentos/movimiento/{movimientoId}
+POST   http://localhost:8080/api/documentos
+PUT    http://localhost:8080/api/documentos/{id}/validar
+
+# Validaciones
+GET    http://localhost:8080/api/validaciones/movimiento/{movimientoId}
+POST   http://localhost:8080/api/validaciones/movimiento/{movimientoId}/validar
+
+# Reportes
+GET    http://localhost:8080/api/reportes/inventario
+GET    http://localhost:8080/api/reportes/movimientos
+GET    http://localhost:8080/api/reportes/producto/{productoId}
 ```
 
-Ejemplo de prueba directa:
+### Flujo completo de prueba recomendado
 
 ```txt
-GET http://localhost:8086/api/productos
+1. POST /api/proveedores         → crear un proveedor
+2. POST /api/productos           → crear un producto (con categoriaId opcional)
+3. POST /api/stock               → crear stock inicial para el producto
+4. POST /api/movimientos         → crear movimiento ENTRADA
+5. POST /api/documentos          → registrar documento para el movimiento
+6. PUT  /api/movimientos/{id}/validar   → validar el movimiento
+7. PUT  /api/movimientos/{id}/completar → completar (actualiza stock)
+8. GET  /api/reportes/inventario        → verificar stock actualizado
 ```
-
-Ejemplo mediante Gateway:
-
-```txt
-GET http://localhost:8080/api/productos
-```
-
-> Las rutas exactas pueden variar según la configuración de controladores y del API Gateway.
 
 ---
+
+## 📁 Estructura del repositorio
+
+```txt
+PokeStock-FullStack1/
+├── PokeStock/
+│   ├── eureka-server/
+│   ├── api-gateway/
+│   ├── ms-productos/
+│   ├── ms-proveedores/
+│   ├── ms-stock/
+│   ├── ms-documentos/
+│   ├── ms-validaciones/
+│   ├── ms-movimientos/
+│   ├── ms-reportes/
+│   └── Seguridad/          ← no implementado en esta entrega
+│       ├── ms-auth/
+│       ├── ms-security/
+│       └── ms-usuarios/
+├── BD/                     ← scripts SQL de referencia
+├── pokestock-banner.png
+└── README.md
+```
