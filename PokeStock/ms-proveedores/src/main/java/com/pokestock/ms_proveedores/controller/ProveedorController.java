@@ -18,26 +18,31 @@ public class ProveedorController {
 
     private final ProveedorService proveedorService;
 
+    // GET /api/proveedores — lista todos los proveedores
     @GetMapping
     public ResponseEntity<List<ProveedorResponseDTO>> listarTodos() {
         return ResponseEntity.ok(proveedorService.listarTodos());
     }
 
+    // GET /api/proveedores/activos — lista solo proveedores activos
     @GetMapping("/activos")
     public ResponseEntity<List<ProveedorResponseDTO>> listarActivos() {
         return ResponseEntity.ok(proveedorService.listarActivos());
     }
 
+    // GET /api/proveedores/{id} — obtiene un proveedor por ID
     @GetMapping("/{id}")
     public ResponseEntity<ProveedorResponseDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(proveedorService.obtenerPorId(id));
     }
 
+    // POST /api/proveedores — crea un nuevo proveedor
     @PostMapping
     public ResponseEntity<ProveedorResponseDTO> crear(@Valid @RequestBody ProveedorRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(proveedorService.crear(dto));
     }
 
+    // PUT /api/proveedores/{id} — actualiza un proveedor existente
     @PutMapping("/{id}")
     public ResponseEntity<ProveedorResponseDTO> actualizar(
             @PathVariable Long id,
@@ -45,6 +50,7 @@ public class ProveedorController {
         return ResponseEntity.ok(proveedorService.actualizar(id, dto));
     }
 
+    // DELETE /api/proveedores/{id} — desactiva un proveedor (borrado lógico)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> desactivar(@PathVariable Long id) {
         proveedorService.desactivar(id);

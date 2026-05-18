@@ -18,18 +18,21 @@ public class ValidacionController {
 
     private final ValidacionService validacionService;
 
+    // GET /api/validaciones/movimiento/{movimientoId} — lista todas las validaciones de un movimiento
     @GetMapping("/movimiento/{movimientoId}")
     public ResponseEntity<List<ValidacionResponseDTO>> obtenerPorMovimiento(
             @PathVariable Long movimientoId) {
         return ResponseEntity.ok(validacionService.obtenerPorMovimiento(movimientoId));
     }
 
+    // GET /api/validaciones/movimiento/{movimientoId}/ultima — obtiene la última validación de un movimiento
     @GetMapping("/movimiento/{movimientoId}/ultima")
     public ResponseEntity<ValidacionResponseDTO> obtenerUltima(
             @PathVariable Long movimientoId) {
         return ResponseEntity.ok(validacionService.obtenerUltimaPorMovimiento(movimientoId));
     }
 
+    // POST /api/validaciones/movimiento/{movimientoId}/validar — valida un movimiento automáticamente
     @PostMapping("/movimiento/{movimientoId}/validar")
     public ResponseEntity<ValidacionResponseDTO> validarMovimiento(
             @PathVariable Long movimientoId,
@@ -39,6 +42,7 @@ public class ValidacionController {
                 .body(validacionService.validarMovimiento(dto));
     }
 
+    // POST /api/validaciones/movimiento/{movimientoId}/aprobar — aprueba manualmente un movimiento
     @PostMapping("/movimiento/{movimientoId}/aprobar")
     public ResponseEntity<ValidacionResponseDTO> aprobarManualmente(
             @PathVariable Long movimientoId) {
@@ -46,6 +50,7 @@ public class ValidacionController {
                 .body(validacionService.aprobarManualmente(movimientoId));
     }
 
+    // POST /api/validaciones/movimiento/{movimientoId}/rechazar — rechaza manualmente un movimiento
     @PostMapping("/movimiento/{movimientoId}/rechazar")
     public ResponseEntity<ValidacionResponseDTO> rechazarManualmente(
             @PathVariable Long movimientoId,

@@ -19,28 +19,32 @@ public class DocumentoController {
 
     private final DocumentoService documentoService;
 
+    // GET /api/documentos — lista todos los documentos
     @GetMapping
     public ResponseEntity<List<DocumentoResponseDTO>> listarTodos() {
         return ResponseEntity.ok(documentoService.listarTodos());
     }
 
+    // GET /api/documentos/{id} — obtiene un documento por ID
     @GetMapping("/{id}")
     public ResponseEntity<DocumentoResponseDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(documentoService.obtenerPorId(id));
     }
 
-    // Endpoint clave — ms-movimientos lo llamará via Feign
+    // GET /api/documentos/movimiento/{movimientoId} — obtiene documentos de un movimiento (usado por ms-movimientos)
     @GetMapping("/movimiento/{movimientoId}")
     public ResponseEntity<List<DocumentoResponseDTO>> obtenerPorMovimiento(
             @PathVariable Long movimientoId) {
         return ResponseEntity.ok(documentoService.obtenerPorMovimiento(movimientoId));
     }
 
+    // GET /api/documentos/pendientes — lista documentos pendientes de validación
     @GetMapping("/pendientes")
     public ResponseEntity<List<DocumentoResponseDTO>> obtenerPendientes() {
         return ResponseEntity.ok(documentoService.obtenerPendientes());
     }
 
+    // POST /api/documentos — registra un nuevo documento
     @PostMapping
     public ResponseEntity<DocumentoResponseDTO> registrar(
             @Valid @RequestBody DocumentoRequestDTO dto) {
@@ -48,7 +52,7 @@ public class DocumentoController {
                 .body(documentoService.registrar(dto));
     }
 
-    // Validar documento — cambia validado de false a true
+    // PUT /api/documentos/{id}/validar — marca un documento como validado
     @PutMapping("/{id}/validar")
     public ResponseEntity<DocumentoResponseDTO> validar(
             @PathVariable Long id,

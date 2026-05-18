@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Servicio que gestiona la lógica de negocio para proveedores
 @Service
 @RequiredArgsConstructor
 @Slf4j

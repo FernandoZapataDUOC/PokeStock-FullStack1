@@ -19,16 +19,19 @@ public class MovimientoController {
 
     private final MovimientoService movimientoService;
 
+    // GET /api/movimientos — lista todos los movimientos
     @GetMapping
     public ResponseEntity<List<MovimientoResponseDTO>> listarTodos() {
         return ResponseEntity.ok(movimientoService.listarTodos());
     }
 
+    // GET /api/movimientos/{id} — obtiene un movimiento por ID
     @GetMapping("/{id}")
     public ResponseEntity<MovimientoResponseDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(movimientoService.obtenerPorId(id));
     }
 
+    // POST /api/movimientos — crea un nuevo movimiento (entrada o salida)
     @PostMapping
     public ResponseEntity<MovimientoResponseDTO> crear(
             @Valid @RequestBody MovimientoRequestDTO dto) {
@@ -36,16 +39,19 @@ public class MovimientoController {
                 .body(movimientoService.crear(dto));
     }
 
+    // PUT /api/movimientos/{id}/validar — valida un movimiento pendiente
     @PutMapping("/{id}/validar")
     public ResponseEntity<MovimientoResponseDTO> validar(@PathVariable Long id) {
         return ResponseEntity.ok(movimientoService.validar(id));
     }
 
+    // PUT /api/movimientos/{id}/completar — completa un movimiento validado y actualiza stock
     @PutMapping("/{id}/completar")
     public ResponseEntity<MovimientoResponseDTO> completar(@PathVariable Long id) {
         return ResponseEntity.ok(movimientoService.completar(id));
     }
 
+    // PUT /api/movimientos/{id}/rechazar — rechaza un movimiento
     @PutMapping("/{id}/rechazar")
     public ResponseEntity<MovimientoResponseDTO> rechazar(
             @PathVariable Long id,

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Servicio que gestiona movimientos de inventario (entradas y salidas) con validación cruzada
 @Service
 @RequiredArgsConstructor
 @Slf4j

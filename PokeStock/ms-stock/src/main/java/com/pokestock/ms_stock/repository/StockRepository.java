@@ -9,6 +9,8 @@ import java.util.Optional;
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
 
+    // Busca todos los registros de stock para un producto — retorna List
+    // porque un producto puede tener stock en múltiples lotes y ubicaciones
     List<Stock> findByProductoId(Long productoId);
 
     Optional<Stock> findByProductoIdAndLote(Long productoId, String lote);

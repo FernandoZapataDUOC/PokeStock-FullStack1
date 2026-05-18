@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+// Entidad que representa el stock de productos en el inventario
 @Entity
 @Table(name = "stock")
 @Data
@@ -37,6 +38,7 @@ public class Stock {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
+    // Actualiza la fecha automáticamente en cada inserción y actualización
     @PrePersist
     @PreUpdate
     public void actualizarFecha() {

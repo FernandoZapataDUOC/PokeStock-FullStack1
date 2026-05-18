@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+// Entidad que representa las validaciones de movimientos de inventario
 @Entity
 @Table(name = "validaciones")
 @Data
@@ -29,6 +30,7 @@ public class Validacion {
     @Column(nullable = false)
     private LocalDateTime fecha;
 
+    // Asigna la fecha actual automáticamente al crear la validación
     @PrePersist
     public void asignarFecha() {
         this.fecha = LocalDateTime.now();

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+// Servicio que gestiona validaciones automáticas y manuales de movimientos
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -71,6 +72,8 @@ public class ValidacionServiceImpl implements ValidacionService {
     public ValidacionResponseDTO validarMovimiento(ValidacionRequestDTO dto) {
         try {
             log.info("Iniciando validacion para movimiento id: {}", dto.getMovimientoId());
+            // Determina el estado según el contenido de la observación:
+// si contiene términos negativos → RECHAZADO, en cualquier otro caso → APROBADO
             EstadoValidacion estado = determinarEstado(dto.getObservacion());
             log.info("Estado determinado: {} para movimiento id: {}",
                     estado, dto.getMovimientoId());
