@@ -1,0 +1,7 @@
+com\pokestock\ms_reportes\client\StockClient.class
+com\pokestock\ms_reportes\client\dto\StockClientDTO.class
+com\pokestock\ms_reportes\client\MovimientoClient.class
+com\pokestock\ms_reportes\client\ProductoClient.class
+com\pokestock\ms_reportes\client\dto\MovimientoClientDTO.class
+com\pokestock\ms_reportes\MsReportesApplication.class
+com\pokestock\ms_reportes\client\dto\ProductoClientDTO.class

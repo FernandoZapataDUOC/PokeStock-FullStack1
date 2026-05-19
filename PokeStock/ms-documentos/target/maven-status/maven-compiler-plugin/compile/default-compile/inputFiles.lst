@@ -1,0 +1,11 @@
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\controller\DocumentoController.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\dto\request\DocumentoRequestDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\dto\request\ValidarDocumentoRequestDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\dto\response\DocumentoResponseDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\exception\GlobalExceptionHandler.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\model\Documento.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\model\TipoDocumento.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\MsDocumentosApplication.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\repository\DocumentoRepository.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\service\DocumentoService.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-documentos\src\main\java\com\pokestock\ms_documentos\service\impl\DocumentoServiceImpl.java
