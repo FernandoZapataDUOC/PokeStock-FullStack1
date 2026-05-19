@@ -21,7 +21,7 @@ spring:
         - id: ms-proveedores
           uri: lb://ms-proveedores
           predicates:
-            - Path=/api/proveedores/**
+            - Path=/api/proveedores,/api/proveedores/**
 
         - id: ms-stock
           uri: lb://ms-stock
