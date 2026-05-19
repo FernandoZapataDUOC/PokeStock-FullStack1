@@ -1,0 +1,9 @@
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\controller\StockController.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\dto\request\StockRequestDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\dto\response\StockResponseDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\exception\GlobalExceptionHandler.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\model\Stock.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\MsStockApplication.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\repository\StockRepository.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\service\impl\StockServiceImpl.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-stock\src\main\java\com\pokestock\ms_stock\service\StockService.java

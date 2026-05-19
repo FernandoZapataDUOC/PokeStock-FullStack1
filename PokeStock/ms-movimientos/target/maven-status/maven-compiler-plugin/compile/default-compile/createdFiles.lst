@@ -1,0 +1,9 @@
+com\pokestock\ms_movimientos\MsMovimientosApplication.class
+com\pokestock\ms_movimientos\client\ProveedorClient.class
+com\pokestock\ms_movimientos\client\dto\StockClientDTO.class
+com\pokestock\ms_movimientos\client\dto\ProveedorClientDTO.class
+com\pokestock\ms_movimientos\client\dto\DocumentoClientDTO.class
+com\pokestock\ms_movimientos\client\StockClient.class
+com\pokestock\ms_movimientos\client\dto\ProductoClientDTO.class
+com\pokestock\ms_movimientos\client\ProductoClient.class
+com\pokestock\ms_movimientos\client\DocumentoClient.class

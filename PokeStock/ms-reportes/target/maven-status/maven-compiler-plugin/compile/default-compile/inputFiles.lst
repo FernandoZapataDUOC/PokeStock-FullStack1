@@ -1,0 +1,17 @@
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\client\dto\MovimientoClientDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\client\dto\ProductoClientDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\client\dto\StockClientDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\client\MovimientoClient.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\client\ProductoClient.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\client\StockClient.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\controller\ReporteController.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\dto\response\ItemInventarioDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\dto\response\ReporteInventarioDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\dto\response\ReporteResponseDTO.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\exception\GlobalExceptionHandler.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\model\Reporte.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\model\TipoReporte.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\MsReportesApplication.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\repository\ReporteRepository.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\service\impl\ReporteServiceImpl.java
+C:\Users\Fernando\Documents\code\PokeStock-FullStack1\PokeStock\ms-reportes\src\main\java\com\pokestock\ms_reportes\service\ReporteService.java

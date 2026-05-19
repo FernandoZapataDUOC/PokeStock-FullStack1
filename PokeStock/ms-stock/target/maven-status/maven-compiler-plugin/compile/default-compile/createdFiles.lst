@@ -1,0 +1,12 @@
+com\pokestock\ms_stock\MsStockApplication.class
+com\pokestock\ms_stock\dto\request\StockRequestDTO$StockRequestDTOBuilder.class
+com\pokestock\ms_stock\model\Stock$StockBuilder.class
+com\pokestock\ms_stock\exception\GlobalExceptionHandler.class
+com\pokestock\ms_stock\dto\response\StockResponseDTO$StockResponseDTOBuilder.class
+com\pokestock\ms_stock\service\StockService.class
+com\pokestock\ms_stock\dto\request\StockRequestDTO.class
+com\pokestock\ms_stock\controller\StockController.class
+com\pokestock\ms_stock\model\Stock.class
+com\pokestock\ms_stock\dto\response\StockResponseDTO.class
+com\pokestock\ms_stock\repository\StockRepository.class
+com\pokestock\ms_stock\service\impl\StockServiceImpl.class
