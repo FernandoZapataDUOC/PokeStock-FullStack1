@@ -63,7 +63,7 @@ public class DocumentoServiceImpl implements DocumentoService {
         Documento doc = documentoRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Documento no encontrado con id: {}", id);
-                    return new RuntimeException("Documento no encontrado con id: " + id);
+                    return new jakarta.persistence.EntityNotFoundException("Documento no encontrado con id: " + id);
                 });
         log.info("Documento encontrado, tipo: {}, movimiento: {}", doc.getTipo(), doc.getMovimientoId());
         return toResponse(doc);
@@ -96,14 +96,14 @@ public class DocumentoServiceImpl implements DocumentoService {
         Documento doc = documentoRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Documento no encontrado para validar, id: {}", id);
-                    return new RuntimeException("Documento no encontrado con id: " + id);
+                    return new jakarta.persistence.EntityNotFoundException("Documento no encontrado con id: " + id);
                 });
             
         // Un documento validado no puede validarse nuevamente.
         // Esta restricción evita doble contabilidad en auditorías.
         if (doc.getValidado()) {
             log.warn("Validación fallida: documento id: {} ya fue validado anteriormente", id);
-            throw new RuntimeException("El documento ya fue validado anteriormente");
+            throw new IllegalStateException("El documento ya fue validado anteriormente");
         }
 
         doc.setValidado(true);

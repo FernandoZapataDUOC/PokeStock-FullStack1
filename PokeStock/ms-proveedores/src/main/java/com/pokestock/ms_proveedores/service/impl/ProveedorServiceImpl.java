@@ -48,7 +48,7 @@ public class ProveedorServiceImpl implements ProveedorService {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Proveedor no encontrado con id: {}", id);
-                    return new RuntimeException("Proveedor no encontrado con id: " + id);
+                    return new jakarta.persistence.EntityNotFoundException("Proveedor no encontrado con id: " + id);
                 });
         log.info("Proveedor encontrado: {}", proveedor.getNombre());
         return toResponse(proveedor);
@@ -62,7 +62,7 @@ public class ProveedorServiceImpl implements ProveedorService {
 
         proveedorRepository.findByEmail(dto.getEmail()).ifPresent(p -> {
             log.warn("Validación fallida: ya existe un proveedor con el email: {}", dto.getEmail());
-            throw new RuntimeException("Ya existe un proveedor con el email: " + dto.getEmail());
+            throw new IllegalStateException("Ya existe un proveedor con el email: " + dto.getEmail());
         });
 
         Proveedor proveedor = Proveedor.builder()
@@ -85,7 +85,7 @@ public class ProveedorServiceImpl implements ProveedorService {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Proveedor no encontrado para actualizar, id: {}", id);
-                    return new RuntimeException("Proveedor no encontrado con id: " + id);
+                    return new jakarta.persistence.EntityNotFoundException("Proveedor no encontrado con id: " + id);
                 });
                 
         // Validación de email duplicado al actualizar: solo se verifica si el email cambió,
@@ -94,7 +94,7 @@ public class ProveedorServiceImpl implements ProveedorService {
             log.info("Validando nuevo email: {}", dto.getEmail());
             proveedorRepository.findByEmail(dto.getEmail()).ifPresent(p -> {
                 log.warn("Validación fallida: email duplicado al actualizar: {}", dto.getEmail());
-                throw new RuntimeException("Ya existe un proveedor con el email: " + dto.getEmail());
+                throw new IllegalStateException("Ya existe un proveedor con el email: " + dto.getEmail());
             });
         }
 
@@ -118,7 +118,7 @@ public class ProveedorServiceImpl implements ProveedorService {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Proveedor no encontrado para desactivar, id: {}", id);
-                    return new RuntimeException("Proveedor no encontrado con id: " + id);
+                    return new jakarta.persistence.EntityNotFoundException("Proveedor no encontrado con id: " + id);
                 });
 
         proveedor.setActivo(false);

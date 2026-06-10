@@ -1,7 +1,7 @@
 # 🃏 PokeStock
 
 <p align="center">
-  <img src="./pokestock-banner.png" width="700" alt="PokeStock Banner">
+  <img src="Media/pokestock-banner.png" width="700" alt="PokeStock Banner">
 </p>
 
 <p align="center">

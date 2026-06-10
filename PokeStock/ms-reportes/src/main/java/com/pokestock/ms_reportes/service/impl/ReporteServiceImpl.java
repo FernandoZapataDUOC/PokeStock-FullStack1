@@ -119,7 +119,7 @@ public class ReporteServiceImpl implements ReporteService {
     @SuppressWarnings("null")
     public ReporteResponseDTO obtenerPorId(Long id) {
         Reporte reporte = reporteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reporte no encontrado con id: " + id));
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Reporte no encontrado con id: " + id));
         return toResponse(reporte);
     }
 
@@ -139,7 +139,7 @@ public class ReporteServiceImpl implements ReporteService {
             return reporteRepository.save(reporte);
         } catch (JsonProcessingException e) {
             log.error("Error serializando reporte: {}", e.getMessage());
-            throw new RuntimeException("Error generando reporte");
+            throw new IllegalStateException("Error generando reporte");
         }
     }
 

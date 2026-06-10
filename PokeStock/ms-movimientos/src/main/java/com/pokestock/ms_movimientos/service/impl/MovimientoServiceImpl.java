@@ -57,13 +57,13 @@ public class MovimientoServiceImpl implements MovimientoService {
         } catch (Exception e) {
             log.error("Error al consultar ms-productos para id {}: {}",
                     dto.getProductoId(), e.getMessage());
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "No se pudo verificar el producto. Servicio no disponible.");
         }
 
         if (producto == null || !producto.getActivo()) {
             log.warn("Producto no encontrado o inactivo, id: {}", dto.getProductoId());
-            throw new RuntimeException(
+            throw new jakarta.persistence.EntityNotFoundException(
                     "Producto no encontrado o inactivo: " + dto.getProductoId());
         }
 
@@ -75,13 +75,13 @@ public class MovimientoServiceImpl implements MovimientoService {
         } catch (Exception e) {
             log.error("Error al consultar ms-proveedores para id {}: {}",
                     dto.getProveedorId(), e.getMessage());
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "No se pudo verificar el proveedor. Servicio no disponible.");
         }
 
         if (proveedor == null || !proveedor.getActivo()) {
             log.warn("Proveedor no encontrado o inactivo, id: {}", dto.getProveedorId());
-            throw new RuntimeException(
+            throw new jakarta.persistence.EntityNotFoundException(
                     "Proveedor no encontrado o inactivo: " + dto.getProveedorId());
         }
 
@@ -96,7 +96,7 @@ public class MovimientoServiceImpl implements MovimientoService {
             } catch (Exception e) {
                 log.error("Error al consultar ms-stock para producto id {}: {}",
                         dto.getProductoId(), e.getMessage());
-                throw new RuntimeException(
+                throw new IllegalStateException(
                         "No se pudo verificar el stock. Servicio no disponible.");
             }
 
@@ -108,7 +108,7 @@ public class MovimientoServiceImpl implements MovimientoService {
                         dto.getProductoId(),
                         stock != null ? stock.getCantidad() : 0,
                         dto.getCantidad());
-                throw new RuntimeException(
+                throw new IllegalArgumentException(
                         "Stock insuficiente. Disponible: "
                         + (stock != null ? stock.getCantidad() : 0)
                         + ", solicitado: " + dto.getCantidad());
@@ -140,7 +140,7 @@ public class MovimientoServiceImpl implements MovimientoService {
 
         if (movimiento.getEstado() != EstadoMovimiento.PENDIENTE) {
             log.warn("Movimiento id: {} no está en estado PENDIENTE", id);
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "Solo se pueden validar movimientos en estado PENDIENTE");
         }
 
@@ -151,13 +151,13 @@ public class MovimientoServiceImpl implements MovimientoService {
         } catch (Exception e) {
             log.error("Error al consultar ms-documentos para movimiento id {}: {}",
                     id, e.getMessage());
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "No se pudo verificar la documentación. Servicio no disponible.");
         }
 
         if (documentos == null || documentos.isEmpty()) {
             log.warn("Validacion fallida: movimiento id {} sin documentos asociados", id);
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     "No se puede validar un movimiento sin documentos asociados");
         }
 
@@ -176,7 +176,7 @@ public class MovimientoServiceImpl implements MovimientoService {
         if (movimiento.getEstado() != EstadoMovimiento.VALIDADO) {
             log.warn("Movimiento id: {} no está en estado VALIDADO, estado actual: {}",
                     id, movimiento.getEstado());
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "Solo se pueden completar movimientos en estado VALIDADO");
         }
 
@@ -187,7 +187,7 @@ public class MovimientoServiceImpl implements MovimientoService {
         } catch (Exception e) {
             log.error("Error al consultar ms-stock para producto id {}: {}",
                     movimiento.getProductoId(), e.getMessage());
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "No se pudo obtener el stock. Servicio no disponible.");
         }
 
@@ -197,7 +197,7 @@ public class MovimientoServiceImpl implements MovimientoService {
         if (stock == null) {
             log.warn("No se encontró stock para producto id: {}",
                     movimiento.getProductoId());
-            throw new RuntimeException(
+            throw new jakarta.persistence.EntityNotFoundException(
                     "No se encontró stock para el producto: "
                     + movimiento.getProductoId());
         }
@@ -216,7 +216,7 @@ public class MovimientoServiceImpl implements MovimientoService {
         } catch (Exception e) {
             log.error("Error al actualizar stock en ms-stock para movimiento id {}: {}",
                     id, e.getMessage());
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "No se pudo actualizar el stock. Servicio no disponible.");
         }
 
@@ -234,7 +234,7 @@ public class MovimientoServiceImpl implements MovimientoService {
 
         if (movimiento.getEstado() == EstadoMovimiento.COMPLETADO) {
             log.warn("Intento de rechazar movimiento ya completado, id: {}", id);
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "No se puede rechazar un movimiento ya completado");
         }
 
@@ -248,7 +248,7 @@ public class MovimientoServiceImpl implements MovimientoService {
     @SuppressWarnings("null")
     private Movimiento buscarPorId(Long id) {
         return movimientoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(
                         "Movimiento no encontrado con id: " + id));
     }
 
