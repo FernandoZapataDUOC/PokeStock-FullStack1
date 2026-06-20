@@ -161,4 +161,26 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .roles(rolesDTO)
                 .build();
     }
+
+    @Override
+    public com.pokestock.ms_usuarios.dto.response.UsuarioInternalDTO obtenerInternoPorUsername(String username) {
+        log.info("Buscando usuario interno con username: {}", username);
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con username: " + username));
+        
+        Set<String> roles = usuario.getRoles().stream()
+                .map(rol -> rol.getNombre())
+                .collect(Collectors.toSet());
+                
+        return com.pokestock.ms_usuarios.dto.response.UsuarioInternalDTO.builder()
+                .id(usuario.getId())
+                .username(usuario.getUsername())
+                .password(usuario.getPassword())
+                .email(usuario.getEmail())
+                .nombre(usuario.getNombre())
+                .apellido(usuario.getApellido())
+                .activo(usuario.getActivo())
+                .roles(roles)
+                .build();
+    }
 }

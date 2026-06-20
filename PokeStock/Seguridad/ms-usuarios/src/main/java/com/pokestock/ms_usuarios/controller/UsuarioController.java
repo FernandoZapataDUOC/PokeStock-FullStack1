@@ -49,4 +49,9 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> asignarRoles(@PathVariable Long id, @RequestBody Set<Long> rolIds) {
         return ResponseEntity.ok(usuarioService.asignarRoles(id, rolIds));
     }
+
+    @GetMapping("/internal/username/{username}")
+    public ResponseEntity<com.pokestock.ms_usuarios.dto.response.UsuarioInternalDTO> obtenerInternoPorUsername(@PathVariable String username) {
+        return ResponseEntity.ok(usuarioService.obtenerInternoPorUsername(username));
+    }
 }

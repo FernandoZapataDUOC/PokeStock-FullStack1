@@ -2,6 +2,7 @@ package com.pokestock.ms_usuarios.service;
 
 import com.pokestock.ms_usuarios.dto.request.UsuarioRequestDTO;
 import com.pokestock.ms_usuarios.dto.response.UsuarioResponseDTO;
+import com.pokestock.ms_usuarios.dto.response.UsuarioInternalDTO;
 import java.util.List;
 import java.util.Set;
 
@@ -18,4 +19,6 @@ public interface UsuarioService {
     void desactivarUsuario(Long id);
 
     UsuarioResponseDTO asignarRoles(Long id, Set<Long> rolIds);
+
+    UsuarioInternalDTO obtenerInternoPorUsername(String username);
 }
