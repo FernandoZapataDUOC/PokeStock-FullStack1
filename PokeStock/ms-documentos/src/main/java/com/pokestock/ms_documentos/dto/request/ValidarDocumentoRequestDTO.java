@@ -1,5 +1,6 @@
 package com.pokestock.ms_documentos.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Data
@@ -8,6 +9,6 @@ import lombok.*;
 @Builder
 public class ValidarDocumentoRequestDTO {
 
-    // Al validar, se puede agregar una observación opcional
+    @Schema(description = "Observaciones opcionales ingresadas por el operador durante la auditoría", example = "Verificado con firma digital del SII")
     private String observacion;
 }
