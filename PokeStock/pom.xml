@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.pokestock</groupId>
+    <artifactId>pokestock-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>PokeStock Parent</name>
+    <description>Parent POM for PokeStock microservices</description>
+
+    <modules>
+        <module>eureka-server</module>
+        <module>ms-productos</module>
+        <module>ms-proveedores</module>
+        <module>ms-stock</module>
+        <module>ms-documentos</module>
+        <module>ms-movimientos</module>
+        <module>ms-validaciones</module>
+        <module>ms-reportes</module>
+        <module>Seguridad/ms-auth</module>
+        <module>Seguridad/ms-usuarios</module>
+        <module>Seguridad/ms-security</module>
+        <module>api-gateway</module>
+    </modules>
+</project>
