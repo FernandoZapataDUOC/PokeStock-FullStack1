@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
                         "username", request.getUsername(),
                         "action", "USER_REGISTERED",
                         "ipAddress", "127.0.0.1",
-                        "details", "Usuario registrado exitosamente con roles: " + request.getRoles()
+                        "details", "Usuario registrado exitosamente con roles: " + request.getRolIds()
                 ));
             } catch (Exception auditEx) {
                 log.error("No se pudo registrar la auditoría de registro: {}", auditEx.getMessage());

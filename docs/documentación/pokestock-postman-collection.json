@@ -1,0 +1,916 @@
+{
+  "info": {
+    "name": "PokeStock - Demo Evaluación 2",
+    "description": "Colección ordenada según el guion del video de Evaluación Parcial 2. Todas las peticiones pasan por el API Gateway usando {{baseUrl}}. La colección guarda automáticamente IDs principales en variables de colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "categoriaId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "productoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "proveedorId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "stockId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "movimientoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "documentoId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Crear categoría",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/categorias",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "categorias"
+          ]
+        },
+        "description": "Demuestra CRUD exitoso en ms-productos y genera categoriaId.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Booster Boxes\",\n  \"descripcion\": \"Cajas de sobres selladas de Pokémon TCG\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 201', function () {",
+              "    pm.expect([201]).to.include(pm.response.code);",
+              "});",
+              "let data = {};",
+              "try { data = pm.response.json(); } catch (e) {}",
+              "if (data.id) pm.collectionVariables.set('categoriaId', data.id);",
+              "if (data.id) console.log('Variable guardada: categoriaId = ' + data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Crear producto con categoría",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/productos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "productos"
+          ]
+        },
+        "description": "Demuestra creación de producto asociado a categoría. Guarda productoId.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Scarlet & Violet Booster Box\",\n  \"tipo\": \"BOOSTER_BOX\",\n  \"edicion\": \"Scarlet & Violet\",\n  \"idioma\": \"EN\",\n  \"anioLanzamiento\": 2023,\n  \"categoriaId\": \"{{categoriaId}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 201', function () {",
+              "    pm.expect([201]).to.include(pm.response.code);",
+              "});",
+              "let data = {};",
+              "try { data = pm.response.json(); } catch (e) {}",
+              "if (data.id) pm.collectionVariables.set('productoId', data.id);",
+              "if (data.id) console.log('Variable guardada: productoId = ' + data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Producto inválido - Bean Validation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/productos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "productos"
+          ]
+        },
+        "description": "Demuestra Bean Validation y manejo de errores con 400 Bad Request.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"\",\n  \"tipo\": \"BOOSTER_BOX\",\n  \"edicion\": \"\",\n  \"idioma\": \"EN\",\n  \"anioLanzamiento\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 400', function () {",
+              "    pm.expect([400]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Crear proveedor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/proveedores",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "proveedores"
+          ]
+        },
+        "description": "Demuestra CRUD en ms-proveedores. Guarda proveedorId.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"The Pokemon Company\",\n  \"contacto\": \"Satoshi Tajiri\",\n  \"pais\": \"Japón\",\n  \"email\": \"distribucion@pokemon.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 201', function () {",
+              "    pm.expect([201]).to.include(pm.response.code);",
+              "});",
+              "let data = {};",
+              "try { data = pm.response.json(); } catch (e) {}",
+              "if (data.id) pm.collectionVariables.set('proveedorId', data.id);",
+              "if (data.id) console.log('Variable guardada: proveedorId = ' + data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Proveedor duplicado - regla de negocio",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/proveedores",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "proveedores"
+          ]
+        },
+        "description": "Demuestra validación de negocio por email duplicado.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Proveedor Repetido\",\n  \"contacto\": \"Jane Doe\",\n  \"pais\": \"Chile\",\n  \"email\": \"distribucion@pokemon.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 400, 404, 409', function () {",
+              "    pm.expect([400, 404, 409]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Crear stock inicial",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/stock",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "stock"
+          ]
+        },
+        "description": "Crea stock inicial para el producto. Guarda stockId si el response incluye id.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productoId\": \"{{productoId}}\",\n  \"lote\": \"LOTE-2024-001\",\n  \"cantidad\": 50,\n  \"ubicacion\": \"Bodega A - Estante 3\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 201', function () {",
+              "    pm.expect([201]).to.include(pm.response.code);",
+              "});",
+              "let data = {};",
+              "try { data = pm.response.json(); } catch (e) {}",
+              "if (data.id) pm.collectionVariables.set('stockId', data.id);",
+              "if (data.id) console.log('Variable guardada: stockId = ' + data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Ver stock inicial por producto",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/stock/producto/{{productoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "stock",
+            "producto",
+            "{{productoId}}"
+          ]
+        },
+        "description": "Demuestra consulta GET y permite confirmar que el stock inicial es 50."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Crear movimiento ENTRADA",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/movimientos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "movimientos"
+          ]
+        },
+        "description": "Flujo principal: ms-movimientos valida producto y proveedor vía Feign. Mostrar logs.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productoId\": \"{{productoId}}\",\n  \"proveedorId\": \"{{proveedorId}}\",\n  \"tipo\": \"ENTRADA\",\n  \"cantidad\": 10,\n  \"observacion\": \"Ingreso lote enero 2024\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 201', function () {",
+              "    pm.expect([201]).to.include(pm.response.code);",
+              "});",
+              "let data = {};",
+              "try { data = pm.response.json(); } catch (e) {}",
+              "if (data.id) pm.collectionVariables.set('movimientoId', data.id);",
+              "if (data.id) console.log('Variable guardada: movimientoId = ' + data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Validar movimiento sin documento - error controlado",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/movimientos/{{movimientoId}}/validar",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "movimientos",
+            "{{movimientoId}}",
+            "validar"
+          ]
+        },
+        "description": "Debe fallar porque todavía no existe documento asociado al movimiento."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 400, 404, 409', function () {",
+              "    pm.expect([400, 404, 409]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Registrar documento",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/documentos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documentos"
+          ]
+        },
+        "description": "Registra respaldo documental para el movimiento. Guarda documentoId.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"movimientoId\": \"{{movimientoId}}\",\n  \"tipo\": \"FACTURA\",\n  \"archivo\": \"factura_pokemon_001.pdf\",\n  \"observacion\": \"Factura de ingreso lote enero\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 201', function () {",
+              "    pm.expect([201]).to.include(pm.response.code);",
+              "});",
+              "let data = {};",
+              "try { data = pm.response.json(); } catch (e) {}",
+              "if (data.id) pm.collectionVariables.set('documentoId', data.id);",
+              "if (data.id) console.log('Variable guardada: documentoId = ' + data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Validar movimiento con documento",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/movimientos/{{movimientoId}}/validar",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "movimientos",
+            "{{movimientoId}}",
+            "validar"
+          ]
+        },
+        "description": "Ahora debe pasar porque ya existe documento asociado. Estado esperado: VALIDADO."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Completar movimiento - actualiza stock vía Feign",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/movimientos/{{movimientoId}}/completar",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "movimientos",
+            "{{movimientoId}}",
+            "completar"
+          ]
+        },
+        "description": "Completa el movimiento y actualiza stock mediante comunicación Feign con ms-stock. Mostrar logs."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 - Ver stock actualizado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/stock/producto/{{productoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "stock",
+            "producto",
+            "{{productoId}}"
+          ]
+        },
+        "description": "Debe evidenciar que el stock subió de 50 a 60."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 - SALIDA con stock insuficiente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/movimientos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "movimientos"
+          ]
+        },
+        "description": "Demuestra regla de negocio: no se puede sacar más stock del disponible.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productoId\": \"{{productoId}}\",\n  \"proveedorId\": \"{{proveedorId}}\",\n  \"tipo\": \"SALIDA\",\n  \"cantidad\": 99999,\n  \"observacion\": \"Prueba de error de negocio\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 400, 404, 409', function () {",
+              "    pm.expect([400, 404, 409]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 - Reporte de inventario",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reportes/inventario",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reportes",
+            "inventario"
+          ]
+        },
+        "description": "Demuestra ms-reportes and consolidación de datos de inventario."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 - Listar movimientos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/movimientos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "movimientos"
+          ]
+        },
+        "description": "Prueba de apoyo por si el profesor pide ver todos los movimientos."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 - Documentos por movimiento",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/documentos/movimiento/{{movimientoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documentos",
+            "movimiento",
+            "{{movimientoId}}"
+          ]
+        },
+        "description": "Prueba de apoyo para demostrar documentos asociados al movimiento."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 - Validar documento",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/documentos/{{documentoId}}/validar",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documentos",
+            "{{documentoId}}",
+            "validar"
+          ]
+        },
+        "description": "Demuestra validación de documento.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"observacion\": \"Documento verificado y aprobado por supervisor\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 - Validar documento dos veces - error de negocio",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/documentos/{{documentoId}}/validar",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documentos",
+            "{{documentoId}}",
+            "validar"
+          ]
+        },
+        "description": "Demuestra regla de negocio: un documento validado no debe validarse dos veces.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"observacion\": \"Intento de doble validación\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 400, 404, 409', function () {",
+              "    pm.expect([400, 404, 409]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "20 - Reporte por producto",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reportes/producto/{{productoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reportes",
+            "producto",
+            "{{productoId}}"
+          ]
+        },
+        "description": "Prueba de apoyo para reporte específico por producto."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "21 - Historial de reportes de movimientos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reportes/movimientos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reportes",
+            "movimientos"
+          ]
+        },
+        "description": "Prueba de apoyo para mostrar reportes históricos si alcanza el tiempo."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status esperado: 200', function () {",
+              "    pm.expect([200]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
