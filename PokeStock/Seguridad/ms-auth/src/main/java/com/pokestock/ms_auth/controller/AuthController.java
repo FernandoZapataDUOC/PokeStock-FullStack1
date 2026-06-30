@@ -38,4 +38,17 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Cerrar sesión", description = "Invalida el token JWT actual agregándolo a la lista negra.")
+    @ApiResponse(responseCode = "200", description = "Sesión cerrada exitosamente")
+    @ApiResponse(responseCode = "400", description = "Token inválido o ausente")
+    public ResponseEntity<Map<String, String>> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Cabecera de autorización inválida."));
+        }
+        String token = authHeader.substring(7);
+        authService.logout(token);
+        return ResponseEntity.ok(Map.of("mensaje", "Sesión cerrada exitosamente. Token revocado."));
+    }
 }

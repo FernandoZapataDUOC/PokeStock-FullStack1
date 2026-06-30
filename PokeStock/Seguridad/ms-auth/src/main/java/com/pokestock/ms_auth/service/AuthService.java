@@ -9,4 +9,5 @@ import java.util.Map;
 public interface AuthService {
     AuthResponse login(AuthRequest request);
     Map<String, Object> register(RegisterRequest request);
+    void logout(String token);
 }

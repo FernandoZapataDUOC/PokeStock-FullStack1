@@ -11,4 +11,7 @@ public interface SecurityFeignClient {
 
     @PostMapping("/api/security/audits")
     ResponseEntity<Map<String, Object>> registrarAuditoria(@RequestBody Map<String, Object> request);
+
+    @PostMapping("/api/security/tokens/blacklist")
+    ResponseEntity<Map<String, Object>> bloquearToken(@RequestBody Map<String, Object> request);
 }
