@@ -1,14 +1,24 @@
-# 🚀 POKESTOCK SISTEMA DE MICROSERVICIOS MULTIMÓDULO - ENTREGA FINAL
+# POKESTOCK SISTEMA DE MICROSERVICIOS MULTIMÓDULO - ENTREGA FINAL
 
-## 📦 COMPONENTES DE DISTRIBUCIÓN Y DEFENSA TÉCNICA
+<p align="center">
+  <img src="docs/pokestock-banner.png" width="700" alt="PokeStock Banner">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21-red?style=for-the-badge&logo=java"> <img src="https://img.shields.io/badge/Spring%20Boot-3.5.15-green?style=for-the-badge&logo=springboot"> <img src="https://img.shields.io/badge/Spring%20Cloud-2025.0.2-blue?style=for-the-badge&logo=spring"> <img src="https://img.shields.io/badge/Spring%20Security-JWT-lightgrey?style=for-the-badge&logo=springsecurity"> <img src="https://img.shields.io/badge/Docker-Compose-blue?style=for-the-badge&logo=docker"> <img src="https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql"> <img src="https://img.shields.io/badge/JUnit%205-Mockito-orange?style=for-the-badge&logo=junit5"> <img src="https://img.shields.io/badge/Postman-API-orange?style=for-the-badge&logo=postman">
+</p>
+
+---
+
+## COMPONENTES DE DISTRIBUCIÓN Y DEFENSA TÉCNICA
 
 Utilice los siguientes enlaces externos para descargar las versiones listas para producción y visualizar la defensa del proyecto:
 
 | Componente | Descripción | Enlace de Descarga (Nube externa) |
 | :--- | :--- | :--- |
-| **📦 Versión Sin Docker** <br>*(Arranque Nativo)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar` compilados y el script `arrancar-nativo.bat` ordenado por fases. | [Descargar ZIP Nativo aquí](https://drive.google.com/file/d/1CyITzAVRj-GVMABoAHHSql6WHKxjoiVp/view?usp=sharing) |
-| **🐳 Versión Con Docker** <br>*(Avance Examen Transversal)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar`, el archivo `docker-compose.yml` y el script automatizado `arrancar-sistema.bat`. | [Descargar ZIP Docker aquí](https://drive.google.com/file/d/1Q5KF25BAgjDaj4qMnMGr4qruDykMVr0i/view?usp=sharing) |
-| **🎥 Video de Defensa Técnica** <br>*(Evaluación Individual)* | Enlace directo al video explicativo donde se evidencia el funcionamiento, testing y el aporte técnico individual. **Duración ideal: 15 minutos (Máximo permitido: 18 minutos).** Incluye subtítulos integrados o el archivo complementario `subtitulos-video.txt` en la entrega. | [Ver Video Explicativo aquí](ENLACE_A_VIDEO_AQUÍ) |
+| **📦 Versión Sin Docker** | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar` compilados y el script `arrancar-nativo.bat` ordenado por fases. | [Descargar ZIP Nativo aquí](https://drive.google.com/file/d/1glPyn0NpIFUo6KBWmhtMY7NY_ph_ueNP/view?usp=sharing) |
+| **🐳 Versión Con Docker** | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar`, el archivo `docker-compose.yml` y el script automatizado `arrancar-sistema.bat`. | [Descargar ZIP Docker aquí](https://drive.google.com/file/d/1iXdRdhb61ezym-IFGtvDSzN22gBuv_lk/view?usp=sharing) |
+| **🎥 Video de Defensa Técnica** | Enlace directo al video explicativo donde se evidencia el funcionamiento, testing y el aporte técnico individual. Incluye subtítulos integrados o el archivo complementario `subtitulos-video.txt` en la entrega. | [Ver Video Explicativo aquí](https://drive.google.com/file/d/1SQKmro-uwmCEe4wv6C7lcpjpEPxbCGy7/view?usp=sharing) |
 
 ---
 
@@ -24,7 +34,7 @@ PokeStock es un sistema completo para la gestión de inventario, proveedores y d
 > * **[docs/bd-general.sql](docs/bd-general.sql)**: Script de base de datos consolidado para todo el ecosistema.
 > * **[docs/endpoints.md](docs/endpoints.md)**: Catálogo estructurado de endpoints expuestos en el API Gateway.
 > * **[docs/diagramas/](docs/diagramas/)**: Diagramas de Arquitectura del Sistema y de Secuencia de Flujos Críticos.
-> * **[docs/documentación/](docs/documentación/)**: Guías de Despliegue, Seguridad/Roles, Ejecución de Pruebas Unitarias y Cobertura con JaCoCo junto a la colección Postman lista para importar.
+> * **[docs/documentación/](docs/documentación/)**: Guías de Despliegue, Seguridad/Roles, Modelado de BD y Relaciones Lógicas, Ejecución de Pruebas Unitarias y Cobertura con JaCoCo junto a la colección Postman lista para importar.
 
 ---
 
@@ -375,6 +385,7 @@ Toda la documentación detallada del proyecto se puede revisar en:
 * [Docs / Script SQL](docs/bd-general.sql)
 * [Docs / Diagrama Arquitectura](docs/diagramas/1_arquitectura_sistema.md)
 * [Docs / Guía JaCoCo](docs/documentación/guia-pruebas-cobertura-jacoco.md)
+* [Docs / Modelo de BD y Relaciones (DER)](docs/documentación/modelo-bd-relaciones.md)
 
 ---
 
@@ -399,3 +410,18 @@ Toda la documentación detallada del proyecto se puede revisar en:
 * Integrar pruebas de integración con H2 Database o Testcontainers.
 * Desarrollar interfaz cliente web (Frontend reactivo o Thymeleaf).
 * Configurar un servidor de Logs centralizado (ej. Grafana Loki o ELK Stack).
+
+---
+
+# 23. Video explicativo de la defensa
+
+* **Enlace directo al Video:** [Ver Video Explicativo aquí (Google Drive)](https://drive.google.com/file/d/1SQKmro-uwmCEe4wv6C7lcpjpEPxbCGy7/view?usp=sharing)
+* **Contenido evaluado:** Demostración de puesta en marcha, registro en Eureka, Gateway, ejecución de pruebas unitarias y desglose del aporte técnico individual.
+
+---
+
+# 24. Subtítulos o transcripción del video
+
+Para agilizar la evaluación y validación de la defensa técnica individual:
+* El texto completo de la transcripción está disponible en el archivo complementario: **[docs/documentación/subtitulos-video.md](docs/documentación/subtitulos-video.md)**.
+* Adicionalmente, el video cuenta con subtítulos integrados activables desde el reproductor web.

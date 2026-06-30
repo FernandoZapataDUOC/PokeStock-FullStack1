@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS roles (
 CREATE TABLE IF NOT EXISTS usuarios (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
@@ -75,7 +76,7 @@ CREATE TABLE IF NOT EXISTS productos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL UNIQUE,
     descripcion TEXT,
-    precio DECIMAL(10,2) NOT NULL,
+    precio DECIMAL(10,2) DEFAULT 0.00,
     tipo VARCHAR(50) NOT NULL,
     categoria_id BIGINT,
     activo BOOLEAN DEFAULT TRUE,
@@ -88,12 +89,10 @@ USE db_proveedores;
 
 CREATE TABLE IF NOT EXISTS proveedores (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    rut VARCHAR(20) NOT NULL UNIQUE,
-    nombre_empresa VARCHAR(150) NOT NULL,
-    contacto VARCHAR(100),
-    telefono VARCHAR(20),
-    email VARCHAR(100),
-    direccion VARCHAR(255),
+    nombre VARCHAR(100) NOT NULL,
+    contacto VARCHAR(100) NOT NULL,
+    pais VARCHAR(60) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
     activo BOOLEAN DEFAULT TRUE
 );
 
@@ -101,7 +100,7 @@ CREATE TABLE IF NOT EXISTS proveedores (
 CREATE DATABASE IF NOT EXISTS db_stock;
 USE db_stock;
 
-CREATE TABLE IF NOT EXISTS stocks (
+CREATE TABLE IF NOT EXISTS stock (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     producto_id BIGINT NOT NULL,
     lote VARCHAR(50) NOT NULL,
@@ -116,12 +115,11 @@ USE db_documentos;
 
 CREATE TABLE IF NOT EXISTS documentos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tipo_documento VARCHAR(50) NOT NULL, -- FACTURA, GUIA_DESPACHO, BOLETA, etc.
-    numero_documento VARCHAR(50) NOT NULL UNIQUE,
-    fecha_emision DATE NOT NULL,
-    monto_total DECIMAL(12,2) NOT NULL,
-    url_archivo VARCHAR(255),
-    estado VARCHAR(30) DEFAULT 'PENDIENTE'
+    movimiento_id BIGINT NOT NULL,
+    tipo VARCHAR(30) NOT NULL,
+    archivo VARCHAR(255) NOT NULL,
+    validado BOOLEAN DEFAULT FALSE,
+    observacion VARCHAR(500)
 );
 
 -- 8. DATABASE: db_movimientos (ms-movimientos)
@@ -130,14 +128,14 @@ USE db_movimientos;
 
 CREATE TABLE IF NOT EXISTS movimientos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tipo_movimiento VARCHAR(20) NOT NULL, -- ENTRADA, SALIDA
     producto_id BIGINT NOT NULL,
+    proveedor_id BIGINT NOT NULL,
+    tipo VARCHAR(20) NOT NULL,
     cantidad INT NOT NULL,
-    fecha_movimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    documento_id BIGINT,
-    proveedor_id BIGINT,
-    usuario_id BIGINT,
-    estado VARCHAR(30) DEFAULT 'COMPLETADO'
+    estado VARCHAR(20) NOT NULL,
+    observacion VARCHAR(500),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- 9. DATABASE: db_validaciones (ms-validaciones)
@@ -146,12 +144,10 @@ USE db_validaciones;
 
 CREATE TABLE IF NOT EXISTS validaciones (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tipo_documento VARCHAR(50) NOT NULL,
-    numero_documento VARCHAR(50) NOT NULL,
-    monto_total DECIMAL(12,2) NOT NULL,
-    estado_validacion VARCHAR(30) NOT NULL, -- APROBADA, RECHAZADA, PENDIENTE
-    observaciones TEXT,
-    fecha_validacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    movimiento_id BIGINT NOT NULL,
+    estado VARCHAR(30) NOT NULL,
+    observacion VARCHAR(500) NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 10. DATABASE: db_reportes (ms-reportes)
@@ -165,3 +161,27 @@ CREATE TABLE IF NOT EXISTS reportes (
     descripcion VARCHAR(255),
     resultado_json TEXT
 );
+
+-- =====================================================================
+-- SEED DATA FOR SECURITY AND USER SERVICES
+-- =====================================================================
+
+USE db_usuarios;
+INSERT INTO roles (id, nombre, descripcion) VALUES 
+(1, 'ROLE_ADMIN', 'Administrador con acceso completo'),
+(2, 'ROLE_USER', 'Usuario operador de inventario')
+ON DUPLICATE KEY UPDATE nombre=nombre;
+
+INSERT INTO usuarios (id, username, password, email, nombre, apellido, activo) VALUES 
+(1, 'admin@pokestock.com', '$2a$10$yPEn/TJg2QQodDuQEJfa0.eLSVo2.lC5W9fWZPEKKjO96rySI/Yfe', 'admin@pokestock.com', 'Administrador', 'General', 1)
+ON DUPLICATE KEY UPDATE username=username;
+
+INSERT INTO usuario_roles (usuario_id, rol_id) VALUES 
+(1, 1)
+ON DUPLICATE KEY UPDATE usuario_id=usuario_id;
+
+USE db_auth;
+-- BCrypt password for 'admin'
+INSERT INTO usuarios_auth (id, username, password, email, activo) VALUES 
+(1, 'admin@pokestock.com', '$2a$10$yPEn/TJg2QQodDuQEJfa0.eLSVo2.lC5W9fWZPEKKjO96rySI/Yfe', 'admin@pokestock.com', 1)
+ON DUPLICATE KEY UPDATE username=username;

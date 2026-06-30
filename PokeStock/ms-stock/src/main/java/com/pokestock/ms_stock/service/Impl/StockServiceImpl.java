@@ -1,4 +1,4 @@
-package com.pokestock.ms_stock.service.Impl;
+package com.pokestock.ms_stock.service.impl;
 
 import com.pokestock.ms_stock.dto.request.StockRequestDTO;
 import com.pokestock.ms_stock.dto.response.StockResponseDTO;

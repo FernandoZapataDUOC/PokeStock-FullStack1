@@ -122,4 +122,29 @@ public class AuthServiceImpl implements AuthService {
             log.error("Error al enviar evento de auditoría a ms-security: {}", e.getMessage());
         }
     }
+
+    @Override
+    public void logout(String token) {
+        log.info("Cerrando sesión y registrando token en lista negra");
+        try {
+            securityFeignClient.bloquearToken(Map.of(
+                    "token", token,
+                    "expiresAt", java.time.LocalDateTime.now().plusHours(1).toString()
+            ));
+            
+            try {
+                securityFeignClient.registrarAuditoria(Map.of(
+                        "username", "sistema",
+                        "action", "LOGOUT",
+                        "ipAddress", "127.0.0.1",
+                        "details", "Cierre de sesión. Token revocado en lista negra."
+                ));
+            } catch (Exception auditEx) {
+                log.error("No se pudo registrar la auditoría de logout: {}", auditEx.getMessage());
+            }
+        } catch (Exception e) {
+            log.error("Error al registrar token en blacklist: {}", e.getMessage());
+            throw new IllegalStateException("Error al cerrar sesión.");
+        }
+    }
 }
